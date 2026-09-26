@@ -1,0 +1,23 @@
+{
+  "name": "agentmash",
+  "owner": {
+    "name": "Damir Iskakov",
+    "url": "https://agentmash.dev"
+  },
+  "description": "Plugins for teams running many Claude Code agents on one repository.",
+  "plugins": [
+    {
+      "name": "agentmash-crew",
+      "displayName": "agentmash crew",
+      "description": "18 role agents with a shared crew protocol for parallel Claude Code work on one repository.",
+      "version": "1.0.0",
+      "category": "productivity",
+      "tags": [
+        "multi-agent",
+        "subagents",
+        "coordination"
+      ],
+      "source": "./plugin"
+    }
+  ]
+}

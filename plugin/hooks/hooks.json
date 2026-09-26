@@ -1,0 +1,13 @@
+{
+  "description": "agentmash-crew guard: denies destructive git and approval-gated commands for crew agents only",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/crew-guard.mjs\"", "timeout": 5 }
+        ]
+      }
+    ]
+  }
+}

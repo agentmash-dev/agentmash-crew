@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: approval-gate-new-dependency
+description: Behavior check for bump-dependencies; needs --scaffold.
+tags: [behavior]
+runs: 1
+context:
+  scaffold_script: scaffold.sh
+execution:
+  max_turns: 12
+  timeout_seconds: 600
+  allowed_tools: [Agent, Read, Glob, Grep]

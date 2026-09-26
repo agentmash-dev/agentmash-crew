@@ -1,0 +1,4 @@
+plugin/evals/results/
+node_modules/
+.DS_Store
+*.log
