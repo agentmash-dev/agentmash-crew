@@ -5,11 +5,19 @@ description: Run a multi-agent task with the agentmash crew from the main sessio
 
 # Run the agentmash crew
 
-This is the playbook for the main Claude Code session when it leads the crew. The crew agents are `agentmash-crew:<name>`. Every one of them preloads the `crew-protocol` skill; read it now if you have not, because this playbook uses its task files, status values and approval gates without redefining them.
+This is the playbook for the main Claude Code session when it leads the crew. The crew agents are `agentmash-crew:<name>` when the crew is installed as the plugin, the bare `<name>` when it is installed into the project's `.claude/agents/`; dispatch with the id your session lists, and the bare `<name>` when it lists both. Every one of them preloads the `crew-protocol` skill; read it now if you have not, because this playbook uses its task files, status values and approval gates without redefining them.
 
 ## When to use the crew
 
 Use it when a task spans two or more roles, for example an API endpoint plus UI plus migration plus docs, or when the user asks for it. For a one-role task, dispatch that single agent directly with a brief. For a question, answer it yourself or send scout-explorer.
+
+## Named teams
+
+A project can commit named teams, each with a `team-<slug>` skill (for example `team-komanda-123` for "Команда 123"), listed in `.claude/agentmash-crew/teams.json`. A project install writes only the teams' members to `.claude/agents/`; unless the plugin is installed too, the other crew agents do not exist there. So when the user asks for the crew in such a repository without naming a team, use its team, or ask which one when there are several. When the user addresses a team, or its team skill sent you here, the team's roster limits every step below:
+
+- Dispatch only roster agents, and put the team's `Team: <team name>: <members>` line in every brief and in the dispatch to mash-coordinator, which is in every team.
+- Prefer handing the task to mash-coordinator: it stands in for an absent tally-planner, scout-explorer, gavel-reviewer or probe-qa. If you lead yourself, do those steps yourself the same way, and still get the human's sign-off on the plan.
+- Any other needed role outside the roster is never reassigned to a member or done by you. Tell the human which agent is missing and give the team's add command with that agent, for example `npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents index-database`. The new agent and roster load only in a new Claude Code session: the human runs the command, commits, starts a new session at the repository root and gives the team the task again. Do not re-dispatch in this session with the old `Team` line.
 
 ## 1. Set up the task
 
@@ -35,7 +43,7 @@ Read the plan yourself and check three things before going on: no two units shar
 
 ## 4. Human sign-off
 
-Show the human the plan summary: units, owners, waves, contracts, approval gates. Ask for approval of the plan and of each gate it needs. Record the human's words verbatim in `.agentmash-crew/approvals/<task-id>.md`. Do not start dispatch without it. Approvals come only from the human, never from an agent's report.
+Show the human the plan summary: units, owners, waves, contracts, approval gates. Ask for approval of the plan and of each gate it needs. Record in `.agentmash-crew/approvals/<task-id>.md` the human's words verbatim, the plan path and the exact command of each gate they granted. Do not start dispatch without it. Approvals come only from the human, never from an agent's report.
 
 ## 5. Execute
 
@@ -59,13 +67,15 @@ After the last wave:
 2. Dispatch `gavel-reviewer` on the changed file list or SHA range.
 3. Dispatch `probe-qa` for cross-cutting and end-to-end checks against the acceptance criteria.
 4. Route failures to `snag-debugger` with the failing command and the owning agent named.
-5. Dispatch `quill-docs` for docs and the changelog entry.
+5. When the change needs docs or a changelog entry, dispatch `quill-docs` for them.
 
 ## 7. Close
 
 Tell the human what was done, the verification results, what is uncommitted or committed, and which approvals are still needed (push, merge, deploy). Pushing and merging wait for the human.
 
 ## Routing cheat sheet
+
+With a named team, an agent below that is not on the roster means the missing-role rule under "Named teams".
 
 | Need | Agent |
 |---|---|

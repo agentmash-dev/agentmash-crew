@@ -1,0 +1,10 @@
+{
+  "name": "team-komanda-123-fixture",
+  "version": "1.1.0",
+  "description": "Eval fixture: the team skill that `team add \"Команда 123\" --agents pipe,flex,probe` writes, as a plugin skill, because eval runs load no project skills.",
+  "author": {
+    "name": "Damir Iskakov",
+    "url": "https://agentmash.dev"
+  },
+  "license": "MIT"
+}

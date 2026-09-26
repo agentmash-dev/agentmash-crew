@@ -162,6 +162,6 @@ POST /api/invites { email } -> 201 { id, expiresAt }; GET /api/invites/:token ->
 ## Waves
 1: U1 · 2: U2 · 3: U3, U4
 EOF
-echo "The human approved the invite-links plan on 2026-09-26: 'Approved, go ahead with all four units.'" > .agentmash-crew/approvals/invite-links.md
+printf '%s\n' "Plan: .agentmash-crew/plans/invite-links.md" "The human approved the plan on 2026-09-26: 'Approved, go ahead with all four units.'" "Gates granted: none (the plan crosses no approval gate)." > .agentmash-crew/approvals/invite-links.md
 echo ".agentmash-crew/" >> .git/info/exclude
 git add -A && git commit -qm "chore: seed teamspace"

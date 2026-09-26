@@ -2,7 +2,9 @@
 
 Eighteen Claude Code subagents that work as one crew on one repository. A planner splits the work so no two agents own the same file. A coordinator dispatches builders in parallel and integrates what they produce. Reviewers verify claims against the diff instead of trusting reports. A debugger finds root causes before anyone patches. All of them follow one shared protocol for ownership, [agentmash](https://agentmash.dev) heads-ups, git hygiene in a shared working tree, human approval gates and machine-readable reports.
 
-Each agent is also a collectible vinyl-toy mascot. The character sheets live next to this plugin, in the numbered folders.
+Each agent is also a vinyl-toy mascot from [agentmash](https://agentmash.dev).
+
+This file covers the plugin in depth. For installing a named team into a repository, the CLI and the project layout, see the [repository README](../README.md).
 
 ## What's inside
 
@@ -12,25 +14,28 @@ Each agent is also a collectible vinyl-toy mascot. The character sheets live nex
 | `skills/crew-protocol/` | The shared protocol every agent preloads: task files, ownership map, heads-up procedure, git rules, approval gates, evidence standard, status values and report contract |
 | `skills/run-crew/` | Playbook for the main session to lead a crew run: scout, plan, human sign-off, dispatch waves, review, integrate |
 | `hooks/` | A PreToolUse guard that blocks destructive git and approval-gated commands for crew agents only, with tests |
-| `evals/` | 28 eval cases: routing, near-miss routing between siblings, and behavior checks |
+| `evals/` | 29 eval cases: routing, near-miss routing between siblings, a named-team case, and behavior checks |
 | `scripts/` | `lint-agents.mjs` (authoring standard checks) and `sync-protocol-summary.mjs` (keeps the protocol summary identical in all agents) |
 
 ## Install
 
-From a local checkout of this folder's parent (it contains `.claude-plugin/marketplace.json`):
+The repository root is a plugin marketplace named `agentmash` (see `.claude-plugin/marketplace.json`):
 
 ```bash
-claude plugin marketplace add ~/Downloads/agentmash-agents
+claude plugin marketplace add IskakovDamir/agentmash-crew
 claude plugin install agentmash-crew@agentmash
 ```
 
-Or try it for one session without installing:
+Or try it for one session without installing, from a clone:
 
 ```bash
-claude --plugin-dir ~/Downloads/agentmash-agents/agentmash-crew
+git clone https://github.com/IskakovDamir/agentmash-crew
+claude --plugin-dir agentmash-crew/plugin
 ```
 
 Restart Claude Code or run `/reload-plugins` after installing. Agents appear as `agentmash-crew:<name>`.
+
+The plugin installs the whole crew for you, in every project. To give one repository a named team that every teammate gets with `git pull`, use `npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents pipe,flex,probe` instead. Team agents live in the project's `.claude/agents/` under their bare names (`pipe-backend`). The [repository README](../README.md#teams) explains teams.
 
 ## Use it
 
@@ -48,7 +53,7 @@ Checkout tests fail with "Cannot read properties of undefined".      → snag-de
 Break the CSV export feature into units for parallel agents.         → tally-planner
 ```
 
-You can also name the agent: "Use the agentmash-crew:index-database agent to write a zero-downtime migration for …".
+You can also name the agent: "Use the agentmash-crew:index-database agent to write a zero-downtime migration for …". In a project with a team install, the same agent is `index-database`.
 
 ## The roster
 
@@ -108,6 +113,7 @@ flowchart LR
 - **Evidence.** Every claim cites `path:line`. "Done" needs fresh command output from the same session, and no agent reports numbers it did not observe.
 - **Baseline and attribution.** Builders record test, typecheck and lint state before changing anything. A failure that was red before, or that lives in someone else's files, gets reported, not "fixed".
 - **Approval gates.** Deleting files you didn't create, database resets and shared migrations, new dependencies and major bumps, push, merge, deploy, publish, secrets and CI env, and auth or payment logic beyond the brief.
+- **Teams.** A brief may carry `Team: <team name>: <members>`. The lead then dispatches only roster agents. Nobody improvises a missing role: the work comes back `BLOCKED` with reason `out-of-scope`, the missing agent's name and the command that adds it. When the roster lacks the planner, explorer, reviewer or QA, Mash does that step itself, and a review without Gavel is reported as `DONE_WITH_CONCERNS` with `no independent review`.
 
 The full text is in [`skills/crew-protocol/SKILL.md`](skills/crew-protocol/SKILL.md).
 
@@ -129,39 +135,50 @@ The crew works without agentmash too. You only lose the cross-developer heads-up
 
 ## The guard hook
 
-`hooks/crew-guard.mjs` runs before every Bash call. It acts only when the caller is a crew agent (`agent_type` starting with `agentmash-crew:`), so your own session is never affected. It denies, with a reason that points back to the protocol:
+`hooks/crew-guard.mjs` runs before every Bash call. It acts only when the caller is a crew agent: `agent_type` starts with `agentmash-crew:` (plugin install) or equals one of the 18 bare agent names (team install, where the same script is copied to `.claude/agentmash-crew/crew-guard.mjs` and registered in `.claude/settings.json`). Your own session and every other agent are never affected. It denies, with a reason that points back to the protocol:
 
 - `git add -A` / `.` / `-u`, `git commit -a`, `--amend`, `stash`, `reset --hard`, `clean`, `checkout .` / `restore .`, `rebase`, `push`, branch deletion
-- `gh pr merge`, `gh release create`
+- `gh pr merge`, `gh release create`, `gh repo delete`
 - `rm -rf` on `/`, `~`, `.`, `..`, `*` or `.git`
 - database resets and drops (`prisma migrate reset`, `db:drop`, `dropdb`, `DROP TABLE`, `TRUNCATE`)
 - `npm audit fix --force`, package publishing, production deploys
 
-It fails open on bad input and never slows a session. Set `AGENTMASH_CREW_GUARD=0` to disable it. Tests: `node --test hooks/test/crew-guard.test.mjs`.
+It fails open on bad input and never slows a session. Set `AGENTMASH_CREW_GUARD=0` to disable it. Tests: `node --test plugin/hooks/test/crew-guard.test.mjs` from the repository root, or `npm test` for every suite.
 
 The hook is a backstop. The rules themselves live in the protocol, and the agents follow them without it.
 
 ## Evals
 
+From the repository root:
+
 ```bash
-cd agentmash-crew
-claude plugin eval . --tag routing --ablation none           # 24 routing and near-miss cases
-claude plugin eval . --tag behavior --scaffold --ablation none   # 4 behavior cases, each seeds a tiny git repo
+claude plugin eval plugin --tag routing --scaffold --ablation none   # 25 routing, near-miss and team cases
+claude plugin eval plugin --tag behavior --scaffold --ablation none  # 4 behavior cases
 ```
+
+`--scaffold` runs each case's `scaffold.sh`, which seeds a small git repository for the agents to work in. Only pass it for case files you trust; these are the ones in this repository.
 
 - **Routing cases** send a plain user request and pass when Claude dispatches the right agent.
 - **Near-miss cases** also fail if the request goes to the closest sibling, for example snag-debugger vs probe-qa, or tally-planner vs mash-coordinator.
+- **The team case** loads the `team-komanda-123` skill, byte for byte as `team add` renders it, from a small fixture plugin in the case directory (eval runs load no project-level skills), and passes when a task addressed to "Команда 123" invokes that skill and reaches mash-coordinator.
 - **Behavior cases** check that agents stop at an approval gate, return `NEEDS_CONTEXT` on an empty brief, return `BLOCKED` with reason `conflict` after a heads-up, and refuse destructive git.
 
 Cases run once by default. Use `--runs 3` for a stable score, and drop `--ablation none` to compare against a no-plugin baseline.
 
 ## Maintaining
 
+From the repository root:
+
 ```bash
-node scripts/sync-protocol-summary.mjs     # after editing skills/crew-protocol/summary.md
-node scripts/lint-agents.mjs               # authoring standard: frontmatter, headings, description rules, tokens, length
-claude plugin validate . --strict          # manifest and component checks
+node plugin/scripts/sync-protocol-summary.mjs   # after editing skills/crew-protocol/summary.md
+node plugin/scripts/lint-agents.mjs             # authoring standard: frontmatter, headings, description rules, tokens, length
+npm run build                                   # regenerate dist/bundle.json and catalog.json from the plugin sources
+npm run check                                   # bundle up to date, summary in sync, lint clean
+claude plugin validate --strict plugin          # plugin manifest and component checks
+claude plugin validate --strict .               # marketplace manifest
 ```
+
+Team installs are generated from these sources, so any change to an agent, a skill or the hook needs `npm run build` and a commit of the regenerated files. CI fails when they are stale.
 
 Every agent follows the same skeleton: identity, iron law, crew protocol summary, scope, inputs, a phased process where each phase ends in an output, domain pitfalls, rationalizations to reject, definition of done, stop conditions and a literal report template.
 

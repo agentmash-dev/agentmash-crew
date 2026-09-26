@@ -2,12 +2,22 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { check } from "../crew-guard.mjs";
+import { check, isCrewAgent } from "../crew-guard.mjs";
 
-const crew = (command) => ({ agent_type: "agentmash-crew:pipe-backend", tool_name: "Bash", tool_input: { command } });
-const denied = (cmd) => check(crew(cmd))?.hookSpecificOutput?.permissionDecision === "deny";
+const crew = (command, agent_type = "agentmash-crew:pipe-backend") => ({ agent_type, tool_name: "Bash", tool_input: { command } });
+const denied = (cmd, agent) => check(crew(cmd, agent))?.hookSpecificOutput?.permissionDecision === "deny";
+const SCRIPT = join(dirname(fileURLToPath(import.meta.url)), "..", "crew-guard.mjs");
+
+// Written out independently of crew-guard.mjs so a renamed or dropped agent fails here.
+const CREW = [
+  "mash-coordinator", "tally-planner", "scout-explorer", "flex-frontend", "pipe-backend", "swipe-mobile",
+  "index-database", "patch-integrations", "batch-ml", "spell-prompts", "lingo-i18n", "probe-qa",
+  "gavel-reviewer", "snag-debugger", "prune-refactor", "bump-dependencies", "rail-cicd", "quill-docs",
+];
 
 const DENY = [
   "git add -A", "git add .", "git add --all", "git add -u", "git -C repo add .", "cd app && git add . && git commit -m x",
@@ -44,6 +54,28 @@ test("ignores the main session and other plugins", () => {
   assert.equal(check({ agent_type: "Explore", tool_name: "Bash", tool_input: { command: "git stash" } }), null);
 });
 
+test("guards plugin-namespaced crew agents", () => {
+  for (const name of CREW) assert.ok(denied("git push", `agentmash-crew:${name}`), `expected deny for agentmash-crew:${name}`);
+  assert.ok(!denied("git status --short", "agentmash-crew:mash-coordinator"));
+});
+
+test("guards bare crew names from a project install", () => {
+  for (const name of CREW) {
+    assert.ok(isCrewAgent(name), name);
+    assert.ok(denied("git stash", name), `expected deny for ${name}`);
+  }
+  assert.ok(!denied("git add src/a.ts", "pipe-backend"));
+});
+
+test("passes non-crew agents through, including near-miss names", () => {
+  const others = ["Explore", "general-purpose", "Plan", "backend-dev", "pipe", "pipe-backend-v2", "Pipe-Backend",
+    " pipe-backend", "other-plugin:pipe-backend", "agentmash:pipe-backend", ""];
+  for (const agent of others) {
+    assert.ok(!isCrewAgent(agent), `not crew: '${agent}'`);
+    assert.equal(check(crew("git push --force", agent)), null, `expected pass-through: '${agent}'`);
+  }
+});
+
 test("fails open on garbage and honors the kill switch", () => {
   assert.equal(check(null), null);
   assert.equal(check({ agent_type: "agentmash-crew:x" }), null);
@@ -53,11 +85,26 @@ test("fails open on garbage and honors the kill switch", () => {
 });
 
 test("CLI: prints a deny decision and always exits 0", () => {
-  const script = join(dirname(fileURLToPath(import.meta.url)), "..", "crew-guard.mjs");
-  const out = execFileSync("node", [script], { input: JSON.stringify(crew("git stash")) }).toString();
+  const out = execFileSync("node", [SCRIPT], { input: JSON.stringify(crew("git stash")) }).toString();
   assert.equal(JSON.parse(out).hookSpecificOutput.permissionDecision, "deny");
-  const quiet = execFileSync("node", [script], { input: "not json" }).toString();
+  const bare = execFileSync("node", [SCRIPT], { input: JSON.stringify(crew("git stash", "probe-qa")) }).toString();
+  assert.equal(JSON.parse(bare).hookSpecificOutput.permissionDecision, "deny");
+  const quiet = execFileSync("node", [SCRIPT], { input: "not json" }).toString();
   assert.equal(quiet, "");
-  const main = execFileSync("node", [script], { input: JSON.stringify({ tool_name: "Bash", tool_input: { command: "git push" } }) }).toString();
+  const main = execFileSync("node", [SCRIPT], { input: JSON.stringify({ tool_name: "Bash", tool_input: { command: "git push" } }) }).toString();
   assert.equal(main, "");
+});
+
+test("CLI: runs from a project path with spaces, Cyrillic and a symlink", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "crew-guard-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const dir = join(root, "Проекты", "my app", ".claude", "agentmash-crew");
+  mkdirSync(dir, { recursive: true });
+  copyFileSync(SCRIPT, join(dir, "crew-guard.mjs"));
+  symlinkSync(join(root, "Проекты"), join(root, "linked"));
+  const input = JSON.stringify(crew("git stash", "pipe-backend"));
+  for (const path of [join(dir, "crew-guard.mjs"), join(root, "linked", "my app", ".claude", "agentmash-crew", "crew-guard.mjs")]) {
+    const out = execFileSync("node", [path], { input }).toString();
+    assert.equal(JSON.parse(out).hookSpecificOutput.permissionDecision, "deny", path);
+  }
 });

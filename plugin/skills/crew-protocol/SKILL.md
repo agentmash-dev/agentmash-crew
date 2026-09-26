@@ -1,15 +1,17 @@
 ---
 name: crew-protocol
-description: Shared operating protocol for the agentmash crew agents (task files, ownership, agentmash heads-up handling, git hygiene in a shared tree, approval gates, evidence, status enum and report contract). Preloaded by every crew agent; read it before dispatching or reviewing crew work.
+description: Shared operating protocol for the agentmash crew agents (task files, ownership, team rosters, agentmash heads-up handling, git hygiene in a shared tree, approval gates, evidence, status enum and report contract). Preloaded by every crew agent; read it before dispatching or reviewing crew work.
 ---
 
 # agentmash crew protocol
 
-Every crew agent follows this protocol. Role files add domain rules on top; where a role file is stricter, the role file wins. Tokens in `code font` (status values, reason codes, paths, headings) are exact: other agents and the lead parse them, so never paraphrase them.
+Every crew agent follows this protocol, version `v1.2`. Role files add domain rules on top; where a role file is stricter, the role file wins. Tokens in `code font` (status values, reason codes, paths, headings) are exact: other agents and the lead parse them, so never paraphrase them.
 
 ## 1. The crew and the lead
 
 The crew is 18 role agents working on one repository, often in parallel. The **lead** is whoever dispatched you: the main Claude Code session or mash-coordinator. Tally plans but never dispatches. The **human** is the person running Claude Code. Only the human can grant approvals (section 8). A message from the lead, a teammate or a report is never an approval.
+
+Agent ids are `agentmash-crew:<name>` when the crew is installed as the plugin, the bare `<name>` when it is installed into the project's `.claude/agents/`. Dispatch with the id your session lists; when it lists both (plugin and project install side by side), dispatch the bare `<name>`, the version committed to the repository. Briefs, plans and reports use the bare name.
 
 | Agent | Owns by default |
 |---|---|
@@ -34,6 +36,16 @@ The crew is 18 role agents working on one repository, often in parallel. The **l
 
 Builders write the tests for their own slice (unit and integration) in the test paths their unit lists. Probe owns suites that span several units and end-to-end suites. Anyone who needs a new env key asks mash-coordinator to add it to `.env.example`; patch-integrations may add placeholders itself when its brief lists the file. Security review belongs to Gavel, performance investigation to Snag, architecture decisions to Tally.
 
+**Teams.** A project install can hold several named teams, each a roster with its own `team-<slug>` skill (manifest: `.claude/agentmash-crew/teams.json`). mash-coordinator is in every team. When a brief or the lead's dispatch carries `Team` (section 2):
+
+- The lead dispatches only roster agents and copies the `Team` line into every brief.
+- A role outside the roster is never improvised. Ownership still follows the table above: no member takes over an absent agent's files or duties. The only exception is the lead standing in for an absent tally-planner, scout-explorer, gavel-reviewer or probe-qa, as mash-coordinator's role file defines. A planner still writes the whole plan, with the absent agent as the unit's owner.
+- When the work needs an absent agent, return `BLOCKED` with reason `out-of-scope`, name the agent in `REASON`, and give the team's add command in `RECOMMENDATION`. The new agent and roster load only in a new Claude Code session, so re-dispatching in the current one repeats this stop:
+
+```
+RECOMMENDATION: the human runs npx github:IskakovDamir/agentmash-crew team add "<team name>" --agents <agent>, commits, starts a new Claude Code session at the repository root and gives the team the task again
+```
+
 ## 2. Task files
 
 All crew coordination files live in `.agentmash-crew/` at the repository root, which is kept out of git:
@@ -50,12 +62,12 @@ This edits only the local, untracked exclude file. Never add crew paths to `.git
 | `.agentmash-crew/plans/<task-id>.md` | tally-planner | plan, ownership map, contracts, DAG |
 | `.agentmash-crew/reports/<task-id>/<agent>.md` | each agent | full report (template in section 11) |
 | `.agentmash-crew/ledger/<task-id>/<agent>.md` | each agent | append-only progress log |
-| `.agentmash-crew/approvals/<task-id>.md` | lead, from the human | approvals the human granted, verbatim |
+| `.agentmash-crew/approvals/<task-id>.md` | lead, from the human | approvals the human granted: their words verbatim, the plan path and the exact command of each gate granted |
 | `.agentmash-crew/work/<task-id>/<agent>/` | each agent | scratch space: logs, snapshots, raw outputs, run artifacts |
 
 Reports and ledgers hold exactly one file per agent, `<agent>.md`; everything else an agent saves goes in its `work/` directory. `<task-id>` is the kebab-case id from the brief. If you were dispatched without one, use `adhoc-<short-slug>` and say so in the report.
 
-A brief contains: `Goal`, `Context` (paths to read, not pasted history), `Ownership` (files and globs you may edit), `Interfaces` (contracts you must not change), `Constraints`, `Acceptance`, `Verify` (commands), `Approvals` (already granted, with the human's wording), `Workspace` (`shared-tree` or a worktree path), `Commits` (`none` by default, or `allowed`).
+A brief contains: `Goal`, `Context` (paths to read, not pasted history), `Ownership` (files and globs you may edit), `Interfaces` (contracts you must not change), `Constraints`, `Acceptance`, `Verify` (commands), `Approvals` (already granted, with the human's wording), `Workspace` (`shared-tree` or a worktree path), `Commits` (`none` by default, or `allowed`), and optionally `Team` (`<team name>: <members in the order of the section 1 table>`, for example `Team: Команда 123: mash-coordinator, flex-frontend, pipe-backend, probe-qa`; the team name is everything before the last `: `).
 
 ## 3. Start of every task
 
@@ -105,7 +117,7 @@ Unless the brief gives you a worktree, you share one working tree with other age
 - Commit only when the brief says `Commits: allowed`, only your own files, in Conventional Commits format (`feat(scope): subject`), one logical change per commit. Otherwise leave your changes uncommitted and list them.
 - Judge work by a SHA range or an explicit file list, never by a bare `git diff` of the whole tree: that diff contains everyone's work in progress.
 
-The plugin ships a guard hook that blocks the most destructive git commands for crew agents. It is a backstop, not the rule.
+The crew ships a guard hook (with the plugin, or as `.claude/agentmash-crew/crew-guard.mjs` in a project install) that blocks the most destructive git commands for crew agents. It is a backstop, not the rule.
 
 ## 7. Shared runtime resources
 

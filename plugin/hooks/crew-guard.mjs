@@ -1,17 +1,28 @@
 #!/usr/bin/env node
 // agentmash-crew guard: a PreToolUse hook for Bash.
 //
-// It only acts on tool calls made by this plugin's agents (agent_type starts with
-// "agentmash-crew:"). The main session and every other agent pass through untouched.
-// It denies commands that destroy other people's uncommitted work in a shared tree,
-// or that cross a human approval gate (crew-protocol sections 6 and 8).
+// It only acts on tool calls made by crew agents. The same file serves both installs:
+// the plugin (hooks/hooks.json), where agent_type is "agentmash-crew:<name>", and a
+// project install (.claude/agentmash-crew/crew-guard.mjs, wired in .claude/settings.json),
+// where agent_type is one of the 18 bare crew names. The main session and every other
+// agent pass through untouched. It denies commands that destroy other people's
+// uncommitted work in a shared tree, or that cross a human approval gate
+// (crew-protocol sections 6 and 8).
 //
 // Fails open: any parse problem exits 0 with no output, so the guard can never
 // break a session. Disable entirely with AGENTMASH_CREW_GUARD=0.
 
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 
 const PREFIX = "agentmash-crew:";
+
+// Bare ids, as used when the crew lives in the project's .claude/agents/.
+const CREW = new Set([
+  "mash-coordinator", "tally-planner", "scout-explorer", "flex-frontend", "pipe-backend", "swipe-mobile",
+  "index-database", "patch-integrations", "batch-ml", "spell-prompts", "lingo-i18n", "probe-qa",
+  "gavel-reviewer", "snag-debugger", "prune-refactor", "bump-dependencies", "rail-cicd", "quill-docs",
+]);
 
 const RULES = [
   { id: "git-add-all", re: /\bgit\s+(?:-C\s+\S+\s+)?add\b(?=[^|;&]*(?:\s-A\b|\s--all\b|\s-u\b|\s--update\b|\s\.(?:\s|$)|\s:\/|\s\*))/,
@@ -54,11 +65,14 @@ function readInput() {
   }
 }
 
+export function isCrewAgent(agentType) {
+  return agentType.startsWith(PREFIX) || CREW.has(agentType);
+}
+
 export function check(input) {
   if (!input || typeof input !== "object") return null;
   if (process.env.AGENTMASH_CREW_GUARD === "0") return null;
-  const agentType = String(input.agent_type || "");
-  if (!agentType.startsWith(PREFIX)) return null;
+  if (!isCrewAgent(String(input.agent_type || ""))) return null;
   if (input.tool_name && input.tool_name !== "Bash") return null;
   const command = String((input.tool_input && input.tool_input.command) || "");
   if (!command) return null;
@@ -78,8 +92,19 @@ export function check(input) {
   return null;
 }
 
-const isMain = import.meta.url === `file://${process.argv[1]}`;
-if (isMain) {
+// Node reports the entry module's URL for its real, percent-encoded path, so compare
+// against the resolved argv path: a naive `file://${argv[1]}` never matches under a
+// directory with spaces, non-ASCII names ("Проекты") or a symlink, and the guard
+// would silently do nothing.
+function isEntryPoint() {
+  try {
+    return Boolean(process.argv[1]) && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
+
+if (isEntryPoint()) {
   try {
     const out = check(readInput());
     if (out) process.stdout.write(JSON.stringify(out));
