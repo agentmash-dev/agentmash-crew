@@ -1,0 +1,3 @@
+# Everything here is text with LF line endings. The bundle build copies sources byte for byte and rejects CR, and
+# dist/bundle.json and catalog.json carry sha256 hashes of those bytes, so a CRLF checkout must never happen.
+* text=auto eol=lf

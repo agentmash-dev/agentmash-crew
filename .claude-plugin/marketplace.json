@@ -10,7 +10,14 @@
       "name": "agentmash-crew",
       "displayName": "agentmash crew",
       "description": "18 role agents with a shared crew protocol for parallel Claude Code work on one repository.",
-      "version": "1.0.0",
+      "version": "1.1.0",
+      "author": {
+        "name": "Damir Iskakov",
+        "url": "https://agentmash.dev"
+      },
+      "homepage": "https://github.com/IskakovDamir/agentmash-crew",
+      "repository": "https://github.com/IskakovDamir/agentmash-crew",
+      "license": "MIT",
       "category": "productivity",
       "tags": [
         "multi-agent",

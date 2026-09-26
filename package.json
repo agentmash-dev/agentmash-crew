@@ -1,0 +1,46 @@
+{
+  "name": "agentmash-crew",
+  "version": "1.1.0",
+  "description": "18 Claude Code agents with one shared protocol and a conductor, installable as a plugin or as a named team committed into your repository.",
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "subagents",
+    "multi-agent",
+    "agents",
+    "agentmash",
+    "coordination",
+    "code-review"
+  ],
+  "homepage": "https://github.com/IskakovDamir/agentmash-crew#readme",
+  "bugs": {
+    "url": "https://github.com/IskakovDamir/agentmash-crew/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IskakovDamir/agentmash-crew.git"
+  },
+  "license": "MIT",
+  "author": "Damir Iskakov",
+  "type": "module",
+  "bin": {
+    "agentmash-crew": "bin/agentmash-crew.mjs"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "dist/bundle.json",
+    "catalog.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs plugin/hooks/test/*.test.mjs",
+    "build": "node scripts/build-bundle.mjs",
+    "check": "node scripts/build-bundle.mjs --check && node plugin/scripts/sync-protocol-summary.mjs --check && node plugin/scripts/lint-agents.mjs",
+    "prepublishOnly": "npm run check && npm test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

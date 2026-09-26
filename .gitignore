@@ -2,3 +2,5 @@ plugin/evals/results/
 node_modules/
 .DS_Store
 *.log
+coverage/
+npm-debug.log*
