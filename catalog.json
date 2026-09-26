@@ -540,7 +540,7 @@
       "title": "Snag",
       "role": "Debugger",
       "group": "quality",
-      "description": "Use when there is a bug, error, stack trace, crash, failing or flaky test, or a 'why is this slow' regression, before anyone proposes a fix. Returns a root cause with path:line evidence, a failing repro and, when files are granted, a minimal red-then-green fix. Not for features (the owning builder), e2e suites (probe-qa), refactoring (prune-refactor), review (gavel-reviewer), a known slow query's index (index-database), metric drops (batch-ml) or mobile config (swipe-mobile).",
+      "description": "Use when there is a bug, error, stack trace, crash, failing or flaky test, or a 'why is this slow' regression: delegate proactively, before investigating or fixing. Returns a root cause with path:line evidence, a failing repro and, when files are granted, a minimal red-then-green fix. Not for features (the owning builder), e2e suites (probe-qa), refactoring (prune-refactor), review (gavel-reviewer), a known slow query's index (index-database) or metric drops (batch-ml).",
       "tools": [
         "Read",
         "Grep",
@@ -555,9 +555,9 @@
       "color": "yellow",
       "wordCount": 2080,
       "sections": {
-        "whenToUse": "Use when there is a bug, error, stack trace, crash, failing or flaky test, or a 'why is this slow' regression, before anyone proposes a fix.",
+        "whenToUse": "Use when there is a bug, error, stack trace, crash, failing or flaky test, or a 'why is this slow' regression: delegate proactively, before investigating or fixing.",
         "returns": "Returns a root cause with path:line evidence, a failing repro and, when files are granted, a minimal red-then-green fix.",
-        "notFor": "Not for features (the owning builder), e2e suites (probe-qa), refactoring (prune-refactor), review (gavel-reviewer), a known slow query's index (index-database), metric drops (batch-ml) or mobile config (swipe-mobile)."
+        "notFor": "Not for features (the owning builder), e2e suites (probe-qa), refactoring (prune-refactor), review (gavel-reviewer), a known slow query's index (index-database) or metric drops (batch-ml)."
       },
       "ru": {
         "summary": "Отладчик: находит, почему что-то падает или тормозит, доказывает это и, если бриф выдал файлы, вносит минимальный фикс с регрессионным тестом. Превращает симптом в самую узкую детерминированно падающую команду, проверяет по одной фальсифицируемой гипотезе за раз и останавливается на причине, а не на триггере; при медленности сначала замеряет и профилирует. Результат: корневая причина одним предложением с `path:line` и цитатой строки, падающее воспроизведение и, при выданных файлах, тест, который краснеет без фикса и зеленеет с ним.",

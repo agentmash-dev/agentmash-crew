@@ -1,6 +1,6 @@
 ---
 name: snag-debugger
-description: "Use when there is a bug, error, stack trace, crash, failing or flaky test, or a 'why is this slow' regression, before anyone proposes a fix. Returns a root cause with path:line evidence, a failing repro and, when files are granted, a minimal red-then-green fix. Not for features (the owning builder), e2e suites (probe-qa), refactoring (prune-refactor), review (gavel-reviewer), a known slow query's index (index-database), metric drops (batch-ml) or mobile config (swipe-mobile)."
+description: "Use when there is a bug, error, stack trace, crash, failing or flaky test, or a 'why is this slow' regression: delegate proactively, before investigating or fixing. Returns a root cause with path:line evidence, a failing repro and, when files are granted, a minimal red-then-green fix. Not for features (the owning builder), e2e suites (probe-qa), refactoring (prune-refactor), review (gavel-reviewer), a known slow query's index (index-database) or metric drops (batch-ml)."
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: opus
 effort: high
