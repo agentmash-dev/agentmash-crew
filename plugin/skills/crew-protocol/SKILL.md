@@ -43,7 +43,7 @@ Builders write the tests for their own slice (unit and integration) in the test 
 - When the work needs an absent agent, return `BLOCKED` with reason `out-of-scope`, name the agent in `REASON`, and give the team's add command in `RECOMMENDATION`. The new agent and roster load only in a new Claude Code session, so re-dispatching in the current one repeats this stop:
 
 ```
-RECOMMENDATION: the human runs npx github:IskakovDamir/agentmash-crew team add "<team name>" --agents <agent>, commits, starts a new Claude Code session at the repository root and gives the team the task again
+RECOMMENDATION: the human runs npx agentmash team add "<team name>" --agents <agent>, commits, starts a new Claude Code session at the repository root and gives the team the task again
 ```
 
 ## 2. Task files
@@ -67,7 +67,7 @@ This edits only the local, untracked exclude file. Never add crew paths to `.git
 
 Reports and ledgers hold exactly one file per agent, `<agent>.md`; everything else an agent saves goes in its `work/` directory. `<task-id>` is the kebab-case id from the brief. If you were dispatched without one, use `adhoc-<short-slug>` and say so in the report.
 
-A brief contains: `Goal`, `Context` (paths to read, not pasted history), `Ownership` (files and globs you may edit), `Interfaces` (contracts you must not change), `Constraints`, `Acceptance`, `Verify` (commands), `Approvals` (already granted, with the human's wording), `Workspace` (`shared-tree` or a worktree path), `Commits` (`none` by default, or `allowed`), and optionally `Team` (`<team name>: <members in the order of the section 1 table>`, for example `Team: Команда 123: mash-coordinator, flex-frontend, pipe-backend, probe-qa`; the team name is everything before the last `: `).
+A brief contains: `Goal`, `Context` (paths to read, not pasted history), `Ownership` (files and globs you may edit), `Interfaces` (contracts you must not change), `Constraints`, `Acceptance`, `Verify` (commands), `Approvals` (already granted, with the human's wording), `Workspace` (`shared-tree` or a worktree path), `Commits` (`none` by default, or `allowed`), and optionally `Team` (`<team name>: <members in the order of the section 1 table>`, for example `Team: agentmash crew: mash-coordinator, flex-frontend, pipe-backend, probe-qa`; the team name is everything before the last `: `).
 
 ## 3. Start of every task
 

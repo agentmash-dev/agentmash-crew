@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { isCrewAgent } from '../plugin/hooks/crew-guard.mjs';
+import { renderTeamSkill } from '../lib/team-plan.mjs';
 
 const read = (rel) => fs.readFileSync(fileURLToPath(new URL(`../${rel}`, import.meta.url)), 'utf8');
 const readJson = (rel) => JSON.parse(read(rel));
@@ -32,27 +33,48 @@ test('crew-guard treats every bundle agent as crew, by bare name and by plugin i
   }
 });
 
-test('every hand-written "npx github:... team add" command uses the bundle add command', () => {
+// The add command names the agentmash CLI, which vendors this installer. The github: form is the alternative for people
+// without that package, and it must pin this release, or two teammates running "the latest commit" write different files.
+const HAND_WRITTEN = [
+  'plugin/skills/crew-protocol/SKILL.md',
+  'plugin/skills/run-crew/SKILL.md',
+  'plugin/agents/mash-coordinator.md',
+  'templates/team-skill.md',
+  'README.md',
+  'plugin/README.md',
+  'docs/bundle-format.md',
+  'bin/agentmash-crew.mjs',
+];
+
+test('every hand-written "team add" command is the bundle add command', () => {
   const prefix = bundle.meta.addCommand.split('<team>')[0];
-  assert.match(prefix, /^npx github:\S+ team add $/);
-  const files = [
-    'plugin/skills/crew-protocol/SKILL.md',
-    'plugin/skills/run-crew/SKILL.md',
-    'plugin/agents/mash-coordinator.md',
-    'templates/team-skill.md',
-    'README.md',
-    'plugin/README.md',
-    'docs/bundle-format.md',
-    'bin/agentmash-crew.mjs',
-  ];
+  assert.equal(prefix, 'npx agentmash team add ');
+  const { version } = readJson('package.json');
+  const pinned = `npx github:IskakovDamir/agentmash-crew#v${version} team add `;
   let seen = 0;
-  for (const file of files) {
-    for (const [command] of read(file).matchAll(/npx github:[^\s`]+ team add /g)) {
-      assert.equal(command, prefix, `${file}: ${command}`);
-      seen += 1;
+  for (const file of HAND_WRITTEN) {
+    for (const [command] of read(file).matchAll(/npx [^\s`]+ team add /g)) {
+      assert.ok(command === prefix || command === pinned, `${file}: ${command}`);
+      if (command === prefix) seen += 1;
     }
   }
   assert.ok(seen >= 5, `expected the add command in several files, found ${seen}`);
+});
+
+test('every "npx github:" spec in the docs pins this release', () => {
+  const { version } = readJson('package.json');
+  for (const file of HAND_WRITTEN) {
+    for (const [spec] of read(file).matchAll(/npx github:[^\s`]+/g)) {
+      assert.equal(spec, `npx github:IskakovDamir/agentmash-crew#v${version}`, `${file}: ${spec}`);
+    }
+  }
+});
+
+test('nothing a team install writes spells the GitHub handle or a github: spec', () => {
+  const team = { name: 'agentmash crew', slug: 'agentmash-crew', members: ['pipe-backend', 'flex-frontend', 'probe-qa'] };
+  const files = [...bundle.agents, ...bundle.shared, renderTeamSkill(bundle, team)];
+  for (const { path, content } of files) assert.doesNotMatch(content, /IskakovDamir|github:/, path);
+  assert.doesNotMatch(bundle.meta.addCommand, /IskakovDamir|github:/);
 });
 
 test('the README roster table matches the bundle', () => {

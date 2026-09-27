@@ -1,7 +1,7 @@
 {
   "name": "agentmash-crew",
   "displayName": "agentmash crew",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "18 role agents for coding teams that run many Claude Code agents on one repository: a coordinator, a planner, builders, reviewers, a debugger and more, sharing one protocol for ownership, agentmash heads-ups, git hygiene, approval gates and reports.",
   "author": {
     "name": "Damir Iskakov",

@@ -44,7 +44,8 @@ export const GROUPS = [
 
 const CONDUCTOR = "mash-coordinator";
 const REPO_URL = "https://github.com/IskakovDamir/agentmash-crew";
-const ADD_COMMAND = "npx github:IskakovDamir/agentmash-crew team add <team> --agents <agent>";
+// The agentmash CLI (0.4.0 or later) vendors this installer, so the command users see names it, not this repository.
+const ADD_COMMAND = "npx agentmash team add <team> --agents <agent>";
 const GUARD_PATH = ".claude/agentmash-crew/crew-guard.mjs";
 const MANIFEST_PATH = ".claude/agentmash-crew/teams.json";
 

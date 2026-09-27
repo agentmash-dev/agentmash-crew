@@ -1,6 +1,6 @@
 # Bundle format and team install algorithm
 
-Status: schema 1, agentmash-crew 1.1.0.
+Status: schema 1, agentmash-crew 1.2.0.
 
 This document is for people who reimplement the team install outside this repository, such as the agentmash CLI (`npx agentmash team add ...`) and the agentmash.dev web installer. The reference implementation is `lib/team-plan.mjs` (pure functions) and `lib/install.mjs` (file system) behind `bin/agentmash-crew.mjs`.
 
@@ -20,7 +20,7 @@ The words MUST, MUST NOT and SHOULD are used as in RFC 2119. "Implementation-def
 8. [Settings merge and unmerge](#8-settings-merge-and-unmerge)
 9. [Operations](#9-operations)
 10. [Determinism requirements](#10-determinism-requirements)
-11. [Worked example: "Команда 123"](#11-worked-example-команда-123)
+11. [Worked example: "agentmash crew"](#11-worked-example-agentmash-crew)
 
 ## 1. Where the bundle comes from
 
@@ -32,7 +32,7 @@ Fetch a released bundle by tag from jsDelivr:
 https://cdn.jsdelivr.net/gh/IskakovDamir/agentmash-crew@v<version>/dist/bundle.json
 ```
 
-The tag is `v` followed by `meta.version`, for example `v1.1.0`. Pin a tag: a branch URL can change under a cached installer.
+The tag is `v` followed by `meta.version`, for example `v1.2.0`. Pin a tag: a branch URL can change under a cached installer.
 
 ### Plugin flavor and project flavor
 
@@ -52,10 +52,10 @@ The bundle is one UTF-8 JSON document, serialized as `JSON.stringify(bundle, nul
   "schema": 1,
   "meta": {
     "name": "agentmash-crew",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "url": "https://github.com/IskakovDamir/agentmash-crew",
     "conductor": "mash-coordinator",
-    "addCommand": "npx github:IskakovDamir/agentmash-crew team add <team> --agents <agent>",
+    "addCommand": "npx agentmash team add <team> --agents <agent>",
     "hook": {
       "event": "PreToolUse",
       "matcher": "Bash",
@@ -98,7 +98,7 @@ The bundle is one UTF-8 JSON document, serialized as `JSON.stringify(bundle, nul
 | `meta.version` | string | The package version the bundle was built from (`package.json`). Written to `teams.json` as `source.version`. |
 | `meta.url` | string | Repository URL. Written to `teams.json` as `source.url`. |
 | `meta.conductor` | string | The agent that is a member of every team: `mash-coordinator`. |
-| `meta.addCommand` | string | Command template shown to users for adding an agent to a team. `<team>` and `<agent>` are literal tokens (see `{{add_command}}` in section 6). |
+| `meta.addCommand` | string | Command template shown to users for adding an agent to a team. `<team>` and `<agent>` are literal tokens (see `{{add_command}}` in section 6). The reference bundle names the agentmash CLI (`npx agentmash`, 0.4.0 or later), which vendors this installer. |
 | `meta.hook` | object | The one settings hook group an install adds (section 8). `marker` is the substring that identifies it. |
 | `meta.manifestPath` | string | Where the manifest lives: `.claude/agentmash-crew/teams.json`. |
 | `agents` | array | All 18 agents in canonical order (below). |
@@ -185,7 +185,7 @@ The repository is untrusted input: a clone or a pull request can commit symbolic
 
 ### Name
 
-The display name is what the user typed, for example `Команда 123`, after trimming leading and trailing whitespace. It MUST be 1 to 60 characters long and MUST NOT contain control characters or newlines. It MUST NOT contain `"`, `\`, `$`, `` ` `` or `!`: the team skill puts the name inside a double-quoted YAML string, and the add command it shows puts the name inside double quotes on a shell command line (section 6), where `$`, `` ` `` and `!` still expand. The same rule applies to names read from an existing manifest (section 7).
+The display name is what the user typed, for example `agentmash crew`, after trimming leading and trailing whitespace. It MUST be 1 to 60 characters long and MUST NOT contain control characters or newlines. It MUST NOT contain `"`, `\`, `$`, `` ` `` or `!`: the team skill puts the name inside a double-quoted YAML string, and the add command it shows puts the name inside double quotes on a shell command line (section 6), where `$`, `` ` `` and `!` still expand. The same rule applies to names read from an existing manifest (section 7).
 
 How "characters" are counted for the 60 limit is implementation-defined.
 
@@ -231,6 +231,7 @@ Examples:
 
 | Name | Slug |
 |---|---|
+| `agentmash crew` | `agentmash-crew` |
 | `Команда 123` | `komanda-123` |
 | `Қазақ тобы` | `qazaq-toby` |
 | `Щука & Юла` | `shchuka-yula` |
@@ -255,15 +256,15 @@ The team skill is `templates.teamSkill.content` with placeholders replaced, writ
 
 The template uses only these placeholders. Each is substituted literally: no escaping, no conditionals, no other template syntax.
 
-| Placeholder | Value | Example for `Команда 123` with pipe, flex, probe |
+| Placeholder | Value | Example for `agentmash crew` with pipe, flex, probe |
 |---|---|---|
-| `{{team_name}}` | The display name | `Команда 123` |
-| `{{team_slug}}` | The slug | `komanda-123` |
-| `{{skill_name}}` | `team-` + slug | `team-komanda-123` |
+| `{{team_name}}` | The display name | `agentmash crew` |
+| `{{team_slug}}` | The slug | `agentmash-crew` |
+| `{{skill_name}}` | `team-` + slug | `team-agentmash-crew` |
 | `{{members_inline}}` | Member full names in canonical order, joined with `, ` | `mash-coordinator, flex-frontend, pipe-backend, probe-qa` |
 | `{{roster_table}}` | A markdown table: header and separator rows, then one row per member in canonical order with the agent's `title`, its `name` in backticks and its `role` | see section 11 |
 | `{{missing_inline}}` | Crew agents not in the team, same format as `{{members_inline}}`, or `none` when the team has all 18 | `tally-planner, scout-explorer, swipe-mobile, …` |
-| `{{add_command}}` | `meta.addCommand` with `<team>` replaced by the display name in double quotes; `<agent>` stays literal | `npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents <agent>` |
+| `{{add_command}}` | `meta.addCommand` with `<team>` replaced by the display name in double quotes; `<agent>` stays literal | `npx agentmash team add "agentmash crew" --agents <agent>` |
 
 The template's frontmatter puts the description in double quotes, and `{{add_command}}` puts the name in double quotes on a shell command line that users copy. That is why names containing `"`, `\`, `$`, `` ` `` or `!` are rejected (section 5): with literal substitution they would break the YAML, or expand in bash, zsh or PowerShell so that the command addresses another team.
 
@@ -280,10 +281,10 @@ The exact header of `{{roster_table}}`, and whether substituted values are scann
 ```json
 {
   "schema": 1,
-  "source": { "name": "agentmash-crew", "version": "1.1.0", "url": "https://github.com/IskakovDamir/agentmash-crew" },
+  "source": { "name": "agentmash-crew", "version": "1.2.0", "url": "https://github.com/IskakovDamir/agentmash-crew" },
   "createdSettings": false,
   "teams": [
-    { "slug": "komanda-123", "name": "Команда 123", "members": ["mash-coordinator", "pipe-backend"] }
+    { "slug": "agentmash-crew", "name": "agentmash crew", "members": ["mash-coordinator", "pipe-backend"] }
   ],
   "files": {
     ".claude/agents/mash-coordinator.md": "<sha256 hex of the bytes written>"
@@ -379,7 +380,7 @@ For the resulting set of teams the installer wants the three shared files, `.cla
 
 ### remove
 
-- The team is found by exact display name, exact slug, or the slug the given text would produce, so `"Команда 123"` and `komanda-123` both work.
+- The team is found by exact display name, exact slug, or the slug the given text would produce, so `"agentmash crew"` and `agentmash-crew` both work.
 - Without an agent list, the team is removed: its skill is deleted, and so is every agent file no remaining team needs. Removing the last team deletes every tracked file and the manifest, and unmerges settings (section 8).
 - With an agent list, those agents leave the team. Naming the conductor is an error, and so is leaving the conductor alone in the team (remove the team instead). Naming an agent that is not a member only warns.
 
@@ -422,15 +423,15 @@ Two conforming installers, given the same bundle, the same starting repository a
 - `settings.json`: two-space JSON plus a trailing newline, and no write at all when the content would not change.
 - The bundle itself: agents in canonical order, keys in the order of section 2, two-space JSON plus a trailing newline.
 
-## 11. Worked example: "Команда 123"
+## 11. Worked example: "agentmash crew"
 
 A fresh repository with no `.claude/` directory. The user runs:
 
 ```bash
-npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents pipe,flex,probe
+npx agentmash team add "agentmash crew" --agents pipe,flex,probe
 ```
 
-**Name and slug.** The name `Команда 123` is 11 characters, with none of `"`, `\`, `$`, `` ` `` and `!`. Lowercased it is `команда 123`; transliterated `komanda 123`; the space becomes `-`: slug `komanda-123`, skill name `team-komanda-123`.
+**Name and slug.** The name `agentmash crew` is 14 characters, with none of `"`, `\`, `$`, `` ` `` and `!`. Lowercasing changes nothing and no letter is in the transliteration table; the space becomes `-`: slug `agentmash-crew`, skill name `team-agentmash-crew`.
 
 **Members.** `pipe`, `flex` and `probe` resolve to `pipe-backend`, `flex-frontend` and `probe-qa`. The conductor is added and the list is sorted canonically: `mash-coordinator, flex-frontend, pipe-backend, probe-qa`.
 
@@ -438,12 +439,12 @@ npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents pi
 
 | Placeholder | Value |
 |---|---|
-| `{{team_name}}` | `Команда 123` |
-| `{{team_slug}}` | `komanda-123` |
-| `{{skill_name}}` | `team-komanda-123` |
+| `{{team_name}}` | `agentmash crew` |
+| `{{team_slug}}` | `agentmash-crew` |
+| `{{skill_name}}` | `team-agentmash-crew` |
 | `{{members_inline}}` | `mash-coordinator, flex-frontend, pipe-backend, probe-qa` |
 | `{{missing_inline}}` | `tally-planner, scout-explorer, swipe-mobile, index-database, patch-integrations, batch-ml, spell-prompts, lingo-i18n, gavel-reviewer, snag-debugger, prune-refactor, bump-dependencies, rail-cicd, quill-docs` |
-| `{{add_command}}` | `npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents <agent>` |
+| `{{add_command}}` | `npx agentmash team add "agentmash crew" --agents <agent>` |
 
 `{{roster_table}}`:
 
@@ -465,7 +466,7 @@ npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents pi
 .claude/agents/probe-qa.md
 .claude/skills/crew-protocol/SKILL.md
 .claude/skills/run-crew/SKILL.md
-.claude/skills/team-komanda-123/SKILL.md
+.claude/skills/team-agentmash-crew/SKILL.md
 .claude/agentmash-crew/crew-guard.mjs
 .claude/agentmash-crew/teams.json
 .claude/settings.json
@@ -499,14 +500,14 @@ npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents pi
   "schema": 1,
   "source": {
     "name": "agentmash-crew",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "url": "https://github.com/IskakovDamir/agentmash-crew"
   },
   "createdSettings": true,
   "teams": [
     {
-      "slug": "komanda-123",
-      "name": "Команда 123",
+      "slug": "agentmash-crew",
+      "name": "agentmash crew",
       "members": [
         "mash-coordinator",
         "flex-frontend",
@@ -523,13 +524,13 @@ npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents pi
     ".claude/agents/probe-qa.md": "<sha256>",
     ".claude/skills/crew-protocol/SKILL.md": "<sha256>",
     ".claude/skills/run-crew/SKILL.md": "<sha256>",
-    ".claude/skills/team-komanda-123/SKILL.md": "<sha256>"
+    ".claude/skills/team-agentmash-crew/SKILL.md": "<sha256>"
   }
 }
 ```
 
 For every file that comes straight from the bundle, the recorded hash equals the bundle's `sha256` for that entry. The team skill's hash is computed over the rendered bytes.
 
-**Extending.** `team add "Команда 123" --agents gavel` adds `gavel-reviewer` to the same team: one new agent file, a re-rendered `team-komanda-123` skill whose `{{missing_inline}}` no longer lists Gavel, and an updated manifest. `settings.json` is not rewritten, because the hook group is already there.
+**Extending.** `team add "agentmash crew" --agents gavel` adds `gavel-reviewer` to the same team: one new agent file, a re-rendered `team-agentmash-crew` skill whose `{{missing_inline}}` no longer lists Gavel, and an updated manifest. `settings.json` is not rewritten, because the hook group is already there.
 
-**A second team.** `team add "Қазақ тобы" --agents index` creates slug `qazaq-toby`, members `mash-coordinator, index-database`, and a second skill `.claude/skills/team-qazaq-toby/SKILL.md`. `.claude/agents/mash-coordinator.md` is shared by both teams and written once. The manifest now lists both teams, `komanda-123` before `qazaq-toby`.
+**A second team.** `team add "Қазақ тобы" --agents index` creates slug `qazaq-toby`, members `mash-coordinator, index-database`, and a second skill `.claude/skills/team-qazaq-toby/SKILL.md`. `.claude/agents/mash-coordinator.md` is shared by both teams and written once. The manifest now lists both teams, `agentmash-crew` before `qazaq-toby`.

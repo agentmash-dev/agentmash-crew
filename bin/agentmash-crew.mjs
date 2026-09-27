@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 // agentmash-crew: install the agentmash crew into a repository as named teams.
 //
-//   npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents pipe,flex,probe
+//   npx agentmash team add "agentmash crew" --agents pipe,flex,probe
 //
-// Zero dependencies. The crew itself (agents, shared skills, the guard hook and the team skill template) comes from
-// dist/bundle.json; the logic lives in lib/team-plan.mjs (pure) and lib/install.mjs (file system).
+// The agentmash CLI (0.4.0 or later) vendors this installer behind `agentmash team`; npx with this repository and a
+// release tag runs it directly. Zero dependencies. The crew itself (agents, shared skills, the guard hook and the team
+// skill template) comes from dist/bundle.json; the logic lives in lib/team-plan.mjs (pure) and lib/install.mjs (file
+// system).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -36,15 +38,15 @@ pipe or pipe-backend. Files go to the repository's .claude/ folder; commit them 
 
 options:
   --agents <list>   comma-separated agent names, or all
-  --slug <slug>     folder name for the team skill (default: derived from the name, "Команда 123" -> komanda-123)
+  --slug <slug>     folder name for the team skill (default: derived from the name, "agentmash crew" -> agentmash-crew)
   --repo <path>     any folder inside the target git repository (default: the current folder)
   --dry-run         show what would change and write nothing
   --force           overwrite files that were changed locally or not written by agentmash-crew
   --json            machine-readable output for team list
 
 examples:
-  npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents pipe,flex,probe
-  npx github:IskakovDamir/agentmash-crew team remove "Команда 123" --agents probe
+  npx agentmash team add "agentmash crew" --agents pipe,flex,probe
+  npx agentmash team remove "agentmash crew" --agents probe
 `;
 
 // Every option and whether it takes a value. --bundle is a hidden development flag (tests load other bundles).
@@ -183,7 +185,7 @@ const splitList = (value) => value.split(/[\s,]+/).filter(Boolean);
 
 function teamAdd([name], options, bundle) {
   if (options.agents === undefined) {
-    throw new UsageError('team add needs --agents, e.g. team add "Команда 123" --agents pipe,flex,probe');
+    throw new UsageError('team add needs --agents, e.g. team add "agentmash crew" --agents pipe,flex,probe');
   }
   const op = { type: 'add', name, slug: options.slug, members: splitList(options.agents), force: Boolean(options.force) };
   const dryRun = Boolean(options['dry-run']);
@@ -278,7 +280,7 @@ function main(argv) {
     if (option !== 'bundle' && !command.options.includes(option)) throw new UsageError(`--${option} does not apply to ${key}`);
   }
   const args = positionals.slice(key.split(' ').length);
-  if (args.length < command.args) throw new UsageError(`${key} needs a team name, e.g. ${key} "Команда 123"`);
+  if (args.length < command.args) throw new UsageError(`${key} needs a team name, e.g. ${key} "agentmash crew"`);
   if (args.length > command.args) {
     throw new UsageError(
       command.args === 1

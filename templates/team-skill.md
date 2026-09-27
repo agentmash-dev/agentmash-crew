@@ -1,6 +1,6 @@
 ---
 name: {{skill_name}}
-description: "Runs a task with the agentmash crew team {{team_name}} ({{team_slug}}) through mash-coordinator, using this team's roster only. Use when the user addresses the team by name or slug, for example '{{team_name}}, add invite links', '{{team_name}} работает' or '{{team_name}}, you there?'."
+description: "Runs a task with the agentmash crew team {{team_name}} ({{team_slug}}) through mash-coordinator, using this team's roster only. Use when the user addresses the team by name or slug, for example '{{team_name}}, add invite links', '{{team_name}}, you there?' or '{{team_name}} работает'."
 ---
 
 # Team {{team_name}}

@@ -35,7 +35,7 @@ claude --plugin-dir agentmash-crew/plugin
 
 Restart Claude Code or run `/reload-plugins` after installing. Agents appear as `agentmash-crew:<name>`.
 
-The plugin installs the whole crew for you, in every project. To give one repository a named team that every teammate gets with `git pull`, use `npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents pipe,flex,probe` instead. Team agents live in the project's `.claude/agents/` under their bare names (`pipe-backend`). The [repository README](../README.md#teams) explains teams.
+The plugin installs the whole crew for you, in every project. To give one repository a named team that every teammate gets with `git pull`, use `npx agentmash team add "agentmash crew" --agents pipe,flex,probe` instead (the agentmash CLI, 0.4.0 or later). Team agents live in the project's `.claude/agents/` under their bare names (`pipe-backend`). The [repository README](../README.md#teams) explains teams.
 
 ## Use it
 
@@ -160,7 +160,7 @@ claude plugin eval plugin --tag behavior --scaffold --ablation none  # 4 behavio
 
 - **Routing cases** send a plain user request and pass when Claude dispatches the right agent.
 - **Near-miss cases** also fail if the request goes to the closest sibling, for example snag-debugger vs probe-qa, or tally-planner vs mash-coordinator.
-- **The team case** loads the `team-komanda-123` skill, byte for byte as `team add` renders it, from a small fixture plugin in the case directory (eval runs load no project-level skills), and passes when a task addressed to "Команда 123" invokes that skill and reaches mash-coordinator.
+- **The team case** loads a team skill, byte for byte as `team add` renders it, from a small fixture plugin in the case directory (eval runs load no project-level skills), and passes when a task addressed to that team by name invokes the skill and reaches mash-coordinator. The fixture team has a Cyrillic name, so the case also covers a transliterated slug.
 - **Behavior cases** check that agents stop at an approval gate, return `NEEDS_CONTEXT` on an empty brief, return `BLOCKED` with reason `conflict` after a heads-up, and refuse destructive git.
 
 Cases run once by default. Use `--runs 3` for a stable score, and drop `--ablation none` to compare against a no-plugin baseline.

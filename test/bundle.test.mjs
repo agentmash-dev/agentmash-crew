@@ -31,7 +31,7 @@ const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 const FIXTURE_VERSION = "9.9.9";
 const FIXTURE_TEMPLATE = `---
 name: {{skill_name}}
-description: "Team {{team_name}} ({{team_slug}}). Use on 'Команда 123, add invite links' or 'Команда 123 работает'."
+description: "Team {{team_name}} ({{team_slug}}). Use on 'agentmash crew, add invite links' or 'agentmash crew работает'."
 ---
 
 # {{team_name}}
@@ -220,7 +220,7 @@ describe("bundle", () => {
       version: FIXTURE_VERSION,
       url: "https://github.com/IskakovDamir/agentmash-crew",
       conductor: "mash-coordinator",
-      addCommand: "npx github:IskakovDamir/agentmash-crew team add <team> --agents <agent>",
+      addCommand: "npx agentmash team add <team> --agents <agent>",
       hook: {
         event: "PreToolUse",
         matcher: "Bash",
@@ -335,7 +335,7 @@ describe("catalog", () => {
       assert.ok(agent.ru.rules.length > 0 && agent.ru.rules.every(nonEmpty), `${agent.name}.ru.rules`);
       // Mash is in every team already, so its snippet leaves the agent to pick.
       const picked = agent.name === catalog.conductor ? "<agent>" : agent.short;
-      assert.equal(agent.installSnippet, `npx github:IskakovDamir/agentmash-crew team add "<team>" --agents ${picked}`);
+      assert.equal(agent.installSnippet, `npx agentmash team add "<team>" --agents ${picked}`);
     }
   });
 

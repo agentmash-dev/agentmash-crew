@@ -13,11 +13,11 @@ Use it when a task spans two or more roles, for example an API endpoint plus UI 
 
 ## Named teams
 
-A project can commit named teams, each with a `team-<slug>` skill (for example `team-komanda-123` for "Команда 123"), listed in `.claude/agentmash-crew/teams.json`. A project install writes only the teams' members to `.claude/agents/`; unless the plugin is installed too, the other crew agents do not exist there. So when the user asks for the crew in such a repository without naming a team, use its team, or ask which one when there are several. When the user addresses a team, or its team skill sent you here, the team's roster limits every step below:
+A project can commit named teams, each with a `team-<slug>` skill (for example `team-agentmash-crew` for "agentmash crew"), listed in `.claude/agentmash-crew/teams.json`. A project install writes only the teams' members to `.claude/agents/`; unless the plugin is installed too, the other crew agents do not exist there. So when the user asks for the crew in such a repository without naming a team, use its team, or ask which one when there are several. When the user addresses a team, or its team skill sent you here, the team's roster limits every step below:
 
 - Dispatch only roster agents, and put the team's `Team: <team name>: <members>` line in every brief and in the dispatch to mash-coordinator, which is in every team.
 - Prefer handing the task to mash-coordinator: it stands in for an absent tally-planner, scout-explorer, gavel-reviewer or probe-qa. If you lead yourself, do those steps yourself the same way, and still get the human's sign-off on the plan.
-- Any other needed role outside the roster is never reassigned to a member or done by you. Tell the human which agent is missing and give the team's add command with that agent, for example `npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents index-database`. The new agent and roster load only in a new Claude Code session: the human runs the command, commits, starts a new session at the repository root and gives the team the task again. Do not re-dispatch in this session with the old `Team` line.
+- Any other needed role outside the roster is never reassigned to a member or done by you. Tell the human which agent is missing and give the team's add command with that agent, for example `npx agentmash team add "agentmash crew" --agents index-database`. The new agent and roster load only in a new Claude Code session: the human runs the command, commits, starts a new session at the repository root and gives the team the task again. Do not re-dispatch in this session with the old `Team` line.
 
 ## 1. Set up the task
 

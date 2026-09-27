@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "conductor": "mash-coordinator",
   "groups": [
     {
@@ -89,7 +89,7 @@
           "После двух неудачных повторных отправок одного юнита он возвращает `BLOCKED` с кодом по причине, а шлюз одобрения перед приёмкой означает `BLOCKED` с `approval-required`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents <agent>"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents <agent>"
     },
     {
       "name": "tally-planner",
@@ -125,7 +125,7 @@
           "Больше 12 юнитов или 4 волн означает план только первого этапа с остальным в `## Later milestones` и статус `DONE_WITH_CONCERNS`, а шлюзы одобрения агент никогда не выдаёт сам."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents tally"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents tally"
     },
     {
       "name": "scout-explorer",
@@ -161,7 +161,7 @@
           "Если три разных поиска не нашли фичу, агент возвращает `NEEDS_CONTEXT` с `missing-input`, а если к 34-му ходу цепочка не протрассирована, пишет что есть и возвращает `PARTIAL` с `budget`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents scout"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents scout"
     },
     {
       "name": "flex-frontend",
@@ -198,7 +198,7 @@
           "Новый пакет или `CLI`, который его ставит, означает `BLOCKED` с `approval-required`, а смена значения существующего токена или пропсов общего примитива без указания в брифе решается новым вариантом или токеном, иначе `BLOCKED` с `contract-change`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents flex"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents flex"
     },
     {
       "name": "pipe-backend",
@@ -235,7 +235,7 @@
           "Если у затронутого хендлера нет проверки доступа к ресурсу, а бриф не задаёт правило, агент не добавляет её молча, а возвращает `BLOCKED` с `approval-required`, предложенным правилом и падающим тестом."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents pipe"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents pipe"
     },
     {
       "name": "swipe-mobile",
@@ -272,7 +272,7 @@
           "Новое разрешение, трекинг, `background mode`, `entitlement` или изменение замороженного ключа без одобрения, как и `eas build`, `eas submit` или `eas update`, означают `BLOCKED` с `approval-required`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents swipe"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents swipe"
     },
     {
       "name": "index-database",
@@ -309,7 +309,7 @@
           "Любая миграция, `backfill`, `reset`, `drop` или `truncate` вне `scratch` означает `BLOCKED` с `approval-required`, а на общий `URL` базы агент не переключается никогда."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents index"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents index"
     },
     {
       "name": "patch-integrations",
@@ -347,7 +347,7 @@
           "Если для проверки нужен `sandbox`-вызов без записи в `Approvals` или не установленный `SDK`, агент возвращает `BLOCKED` с `approval-required`, а если нужна таблица, то `BLOCKED` с `out-of-scope` и точной схемой для `index-database`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents patch"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents patch"
     },
     {
       "name": "batch-ml",
@@ -385,7 +385,7 @@
           "Полный прогон дольше 10 минут, на `GPU`, на платных или общих ресурсах или на половине свободной памяти требует одобрения человека, иначе `BLOCKED` с `approval-required` и оценкой времени."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents batch"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents batch"
     },
     {
       "name": "spell-prompts",
@@ -422,7 +422,7 @@
           "Смена модели или провайдера без одобрения или рост средних токенов на вызов больше 25% означают `BLOCKED` с `approval-required`, а три ревизии, не прошедшие правило приёмки, означают `BLOCKED` с `out-of-scope`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents spell"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents spell"
     },
     {
       "name": "lingo-i18n",
@@ -459,7 +459,7 @@
           "Без `machine-ok` агент сам не переводит и оставляет ключи непереведёнными, а юридические тексты, согласия и цены без перевода человеком идут черновиком в отчёт со статусом `DONE_WITH_CONCERNS`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents lingo"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents lingo"
     },
     {
       "name": "probe-qa",
@@ -496,7 +496,7 @@
           "Тесты против `production` запрещены, а при проваленном `preflight` или необходимости `reset` или `TRUNCATE` базы агент возвращает `BLOCKED` с `approval-required`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents probe"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents probe"
     },
     {
       "name": "gavel-reviewer",
@@ -532,7 +532,7 @@
           "Если ни локальная, ни `CI`-проверка не покрывает `head`, статус `DONE_WITH_CONCERNS` с `tooling` и вердикт не выше `COMMENT`, а секрет в диапазоне коммитов всегда `critical` с рекомендацией ротации."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents gavel"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents gavel"
     },
     {
       "name": "snag-debugger",
@@ -569,7 +569,7 @@
           "Три неудачных попытки воспроизведения или фикса означают `BLOCKED` с подходящим кодом и всеми попытками в `ATTEMPTED`, а фикс больше 40 строк или 3 файлов считается редизайном с `contract-change`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents snag"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents snag"
     },
     {
       "name": "prune-refactor",
@@ -606,7 +606,7 @@
           "Если один и тот же ход трижды краснеет, агент возвращает `BLOCKED` с подходящим кодом, оставив дерево на последнем зелёном ходе."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents prune"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents prune"
     },
     {
       "name": "bump-dependencies",
@@ -644,7 +644,7 @@
           "Мажор, минор в `0.x`, новая зависимость, новый `install`-скрипт или мажор тулчейна без одобрения человека означают `BLOCKED` с `approval-required`, а обход через `--legacy-peer-deps` или `--force` не допускается."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents bump"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents bump"
     },
     {
       "name": "rail-cicd",
@@ -682,7 +682,7 @@
           "Любое изменение `production` деплой-джобы, защиты веток, новый сторонний `action` или шлюз из раздела 8 протокола означает `BLOCKED` с `approval-required`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents rail"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents rail"
     },
     {
       "name": "quill-docs",
@@ -719,7 +719,7 @@
           "Если код противоречит плану, брифу или отчёту, документируется только то, в чём они сходятся, расхождение уходит в `## Discrepancies` с владельцем, и статус становится `DONE_WITH_CONCERNS`."
         ]
       },
-      "installSnippet": "npx github:IskakovDamir/agentmash-crew team add \"<team>\" --agents quill"
+      "installSnippet": "npx agentmash team add \"<team>\" --agents quill"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "agentmash-crew",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "18 Claude Code agents with one shared protocol and a conductor, installable as a plugin or as a named team committed into your repository.",
   "keywords": [
     "claude-code",

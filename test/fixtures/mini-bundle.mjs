@@ -41,7 +41,7 @@ export function makeBundle({ version = '1.1.0', revise = (path, content) => cont
       version,
       url: 'https://github.com/IskakovDamir/agentmash-crew',
       conductor: 'mash-coordinator',
-      addCommand: 'npx github:IskakovDamir/agentmash-crew team add <team> --agents <agent>',
+      addCommand: 'npx agentmash team add <team> --agents <agent>',
       hook: {
         event: 'PreToolUse',
         matcher: 'Bash',

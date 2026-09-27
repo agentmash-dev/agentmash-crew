@@ -1,6 +1,6 @@
 ---
 name: team-komanda-123
-description: "Runs a task with the agentmash crew team Команда 123 (komanda-123) through mash-coordinator, using this team's roster only. Use when the user addresses the team by name or slug, for example 'Команда 123, add invite links', 'Команда 123 работает' or 'Команда 123, you there?'."
+description: "Runs a task with the agentmash crew team Команда 123 (komanda-123) through mash-coordinator, using this team's roster only. Use when the user addresses the team by name or slug, for example 'Команда 123, add invite links', 'Команда 123, you there?' or 'Команда 123 работает'."
 ---
 
 # Team Команда 123
@@ -37,7 +37,7 @@ If the user only calls the team, for example "Команда 123 работае�
 If the task needs an agent outside the roster (for example a migration while index-database is not a member), or mash-coordinator returns `BLOCKED` with reason `out-of-scope` naming one, do not hand that work to a member and do not do it yourself. Tell the user which agent is missing and give the command that adds it to this team, with `<agent>` replaced by that agent's name:
 
 ```
-npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents <agent>
+npx agentmash team add "Команда 123" --agents <agent>
 ```
 
 The new agent and the new roster load only in a new Claude Code session. Tell the user to run the command, commit, start a new session at the repository root and give the team the task again; do not re-dispatch in this session, because the `Team` line above still has the old roster.

@@ -47,28 +47,34 @@ On Windows, both installs need [Git for Windows](https://git-scm.com/download/wi
 
 ## Install a team into a repository
 
-Inside a git repository (needs Node.js 18 or newer and git):
+Inside a git repository, with the [agentmash CLI](https://www.npmjs.com/package/agentmash) 0.4.0 or later (Node.js 18 or newer and git):
 
 ```bash
-npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents pipe,flex,probe
+npx agentmash team add "agentmash crew" --agents pipe,flex,probe
+```
+
+Without the agentmash package, the same installer runs from this repository, pinned to a release:
+
+```bash
+npx github:IskakovDamir/agentmash-crew#v1.2.0 team add "agentmash crew" --agents pipe,flex,probe
 ```
 
 Mash is added automatically, so this team is Mash, Flex, Pipe and Probe. Add `--dry-run` to see the file list first. The installer writes the team into the project's `.claude/` directory and prints a commit command that stages exactly the files it manages and the ones it deleted, and nothing else under `.claude/` (not your other skills, and not installed files you edited):
 
 ```bash
-git add -- .claude/agentmash-crew/crew-guard.mjs .claude/agentmash-crew/teams.json .claude/agents/flex-frontend.md ... && git commit -m "chore: add agentmash team Команда 123"
+git add -- .claude/agentmash-crew/crew-guard.mjs .claude/agentmash-crew/teams.json .claude/agents/flex-frontend.md ... && git commit -m "chore: add agentmash team agentmash crew"
 ```
 
 Then start Claude Code at the repository root (the guard hook does not load when Claude Code starts in a subfolder) and talk to the team by name:
 
 ```
-Команда 123, add invite links: admins create a link, it expires in 7 days
+agentmash crew, add invite links: admins create a link, it expires in 7 days
 ```
 
 The team skill is also a slash command, which works even when Claude Code has too many skills to show it every description (see [Teams](#teams)):
 
 ```
-/team-komanda-123 add invite links: admins create a link, it expires in 7 days
+/team-agentmash-crew add invite links: admins create a link, it expires in 7 days
 ```
 
 ## Teams
@@ -85,13 +91,13 @@ A team is a named roster of crew agents that lives in a repository. The installe
 | `.claude/agentmash-crew/teams.json` | The manifest: teams, members, and a hash of every file the installer wrote |
 | `.claude/settings.json` | Gets one `PreToolUse` hook entry that runs the guard. Every other setting is kept |
 
-The team's slug comes from its name: `Команда 123` becomes `komanda-123`, so its skill is `team-komanda-123`. Russian and Kazakh Cyrillic are transliterated; for names in other scripts pass `--slug`.
+The team's slug comes from its name: `agentmash crew` becomes `agentmash-crew`, so its skill is `team-agentmash-crew`. Russian and Kazakh Cyrillic are transliterated (`Платежи` becomes `platezhi`); for names in other scripts pass `--slug`.
 
 **Sharing.** The files are ordinary project files. Commit them, and teammates get the team on their next `git pull`. Start a new Claude Code session at the repository root after pulling so it loads the new agents, skills and hook.
 
-**Using a team.** Say the team's name with a task: "Команда 123, add invite links" or "komanda-123: fix the flaky checkout test", or type `/team-komanda-123 <task>`. The team skill hands the task to Mash with the roster. Mash plans the work (Tally does, if Tally is on the team), you sign off on the plan, and only then does Mash dispatch the team's agents, never anyone outside the roster. "Команда 123 работает" with no task gets you the roster and a question about what to do.
+**Using a team.** Say the team's name with a task: "agentmash crew, add invite links" or "agentmash-crew: fix the flaky checkout test", or type `/team-agentmash-crew <task>`. The team skill hands the task to Mash with the roster. Mash plans the work (Tally does, if Tally is on the team), you sign off on the plan, and only then does Mash dispatch the team's agents, never anyone outside the roster. "agentmash crew работает" with no task gets you the roster and a question about what to do.
 
-Addressing the team by name works because Claude sees the team skill's description, which names the team. Claude Code keeps skill descriptions within a budget of about 1% of the context window, and with many skills installed it shows the least used ones by name only; a freshly installed team skill has never been used. If "Команда 123, ..." does not reach the team, type `/team-komanda-123 <task>`, which always works, or raise `skillListingBudgetFraction` in your settings.
+Addressing the team by name works because Claude sees the team skill's description, which names the team. Claude Code keeps skill descriptions within a budget of about 1% of the context window, and with many skills installed it shows the least used ones by name only; a freshly installed team skill has never been used. If "agentmash crew, ..." does not reach the team, type `/team-agentmash-crew <task>`, which always works, or raise `skillListingBudgetFraction` in your settings.
 
 **Plugin and team together.** With the plugin installed too, Claude Code lists every crew agent twice: `agentmash-crew:pipe-backend` from the plugin and `pipe-backend` from the repository. The crew then dispatches the bare names, so a team runs the agent versions committed to the repository.
 
@@ -112,14 +118,17 @@ Addressing the team by name works because Claude sees the team skill's descripti
 The add command for a team looks like this:
 
 ```bash
-npx github:IskakovDamir/agentmash-crew team add "Команда 123" --agents index
+npx agentmash team add "agentmash crew" --agents index
 ```
 
 ## CLI reference
 
 ```
-npx github:IskakovDamir/agentmash-crew <command> [options]
+npx agentmash team <command> [options]                                # the agentmash CLI, 0.4.0 or later
+npx github:IskakovDamir/agentmash-crew#v1.2.0 <command> [options]     # this repository's installer, no agentmash package
 ```
+
+Both run the same installer. `agents`, `help` and `--version` are the installer's own commands; the agentmash CLI has `team add`, `team remove`, `team list` and `team update`.
 
 | Command | What it does |
 |---|---|
@@ -142,7 +151,7 @@ npx github:IskakovDamir/agentmash-crew <command> [options]
 
 Notes:
 
-- The team name is one argument, so quote it: `team add "Команда 123" ...`. Names are up to 60 characters and may not contain `"`, `\`, `$`, `` ` `` or `!`, because the name ends up inside double-quoted shell commands.
+- The team name is one argument, so quote it: `team add "agentmash crew" ...`. Names are up to 60 characters and may not contain `"`, `\`, `$`, `` ` `` or `!`, because the name ends up inside double-quoted shell commands.
 - The installer finds the repository root by walking up to the nearest `.git`, and writes only inside `.claude/`. It never touches `.claude/agentmash/`, which belongs to the agentmash CLI. It refuses to install when that root is your home directory (a dotfiles repository), because `~/.claude` is Claude Code's configuration for every project.
 - The printed commit command uses `git -C <root>` when you ran the installer from a subfolder or with `--repo`, so it works from where you are.
 - `mash-coordinator` cannot be removed from a team. Remove the team instead.
@@ -215,13 +224,13 @@ claude plugin uninstall agentmash-crew@agentmash
 claude plugin marketplace remove agentmash
 ```
 
-**Team.** `npx github:IskakovDamir/agentmash-crew` runs the latest commit on the default branch. Pin a release with `#<tag>` when you want repeatable installs, for example `npx github:IskakovDamir/agentmash-crew#v1.1.0 team update`.
+**Team.** `npx agentmash team update` rewrites the installed files to the crew version the agentmash CLI carries. From this repository, pin a release with `#<tag>` so everyone on the team writes the same files: `npx github:IskakovDamir/agentmash-crew#v1.2.0 team update`.
 
 ```bash
-npx github:IskakovDamir/agentmash-crew team update --dry-run        # preview
-npx github:IskakovDamir/agentmash-crew team update                  # rewrite files from the new version
-npx github:IskakovDamir/agentmash-crew team remove "Команда 123" --agents probe   # drop one agent
-npx github:IskakovDamir/agentmash-crew team remove "Команда 123"    # drop the whole team
+npx agentmash team update --dry-run                          # preview
+npx agentmash team update                                    # rewrite files from the new version
+npx agentmash team remove "agentmash crew" --agents probe    # drop one agent
+npx agentmash team remove "agentmash crew"                   # drop the whole team
 ```
 
 Commit the result each time. Agent files stay as long as some team still uses them. Removing the last team deletes every file the installer wrote, its manifest, and its hook entry in `.claude/settings.json`; hooks you added next to it stay, and the settings file itself is deleted only if the installer created it and nothing else is left in it. Files you changed locally are left in place with a warning.
