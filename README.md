@@ -6,6 +6,8 @@ Eighteen Claude Code subagents that work as one crew on one repository. Each has
 
 What gets installed is Markdown (agents and skills) plus one small Node script, a hook that blocks destructive commands for crew agents. The team installer is a Node CLI with no dependencies. There is no server and no account.
 
+Browse the crew and build a team on the site: [agentmash.dev/agents](https://agentmash.dev/agents) and [agentmash.dev/teams/new](https://agentmash.dev/teams/new). The builder gives you the command below with your team's name and members filled in, or opens the pull request for you.
+
 You can install the crew two ways:
 
 - **As a plugin**, for yourself, in every project. You get all 18 agents.
