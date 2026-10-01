@@ -37,7 +37,7 @@
   "scripts": {
     "test": "node --test test/*.test.mjs plugin/hooks/test/*.test.mjs",
     "build": "node scripts/build-bundle.mjs",
-    "check": "node scripts/build-bundle.mjs --check && node plugin/scripts/sync-protocol-summary.mjs --check && node plugin/scripts/lint-agents.mjs",
+    "check": "node scripts/build-bundle.mjs --check && node plugin/scripts/sync-protocol-summary.mjs --check && node plugin/scripts/lint-agents.mjs && node lab/scripts/sync-protocol-summary.mjs --check && node lab/scripts/lint-agents.mjs",
     "prepublishOnly": "npm run check && npm test"
   },
   "engines": {

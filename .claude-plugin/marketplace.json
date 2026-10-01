@@ -4,7 +4,7 @@
     "name": "Damir Iskakov",
     "url": "https://agentmash.dev"
   },
-  "description": "Plugins for teams running many Claude Code agents on one repository.",
+  "description": "Plugins for teams running many Claude Code agents on one repository, and for running science with them.",
   "plugins": [
     {
       "name": "agentmash-crew",
@@ -25,6 +25,27 @@
         "coordination"
       ],
       "source": "./plugin"
+    },
+    {
+      "name": "agentmash-lab",
+      "displayName": "agentmash lab",
+      "description": "6 science agents run by the crew's coordinator: hypotheses with cross-field prior art, pre-registration locks, verified data, registered analyses, controls and an evidence judge.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Damir Iskakov",
+        "url": "https://agentmash.dev"
+      },
+      "homepage": "https://github.com/IskakovDamir/agentmash-crew",
+      "repository": "https://github.com/IskakovDamir/agentmash-crew",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "multi-agent",
+        "science",
+        "research",
+        "reproducibility"
+      ],
+      "source": "./lab"
     }
   ]
 }
