@@ -17,6 +17,7 @@ const CREW = [
   "mash-coordinator", "tally-planner", "scout-explorer", "flex-frontend", "pipe-backend", "swipe-mobile",
   "index-database", "patch-integrations", "batch-ml", "spell-prompts", "lingo-i18n", "probe-qa",
   "gavel-reviewer", "snag-debugger", "prune-refactor", "bump-dependencies", "rail-cicd", "quill-docs",
+  "higgs-video", "plain-editor", "tempo-motion", "inspo-scrap",
 ];
 
 const DENY = [
@@ -60,7 +61,7 @@ test("guards plugin-namespaced crew agents", () => {
 });
 
 // Lab agents come from the agentmash-lab plugin and are dispatched by Mash, so this guard covers them.
-const LAB = ["hunch-hypotheses", "seal-prereg", "atlas-curator", "bench-analyst", "foil-controls", "assay-judge"];
+const LAB = ["hunch-hypotheses", "seal-prereg", "atlas-curator", "bench-analyst", "foil-controls", "assay-judge", "volt-ieee", "ribbon-isef", "tensor-mlconf", "proof-journal"];
 
 test("guards plugin-namespaced lab agents", () => {
   for (const name of LAB) assert.ok(denied("git push", `agentmash-lab:${name}`), `expected deny for agentmash-lab:${name}`);

@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import {
   AGENT_ORDER,
   GROUPS,
+  INHERITS_TOOLS,
   PLUGIN_POINTER,
   PROJECT_POINTER,
   buildBundle,
@@ -135,11 +136,14 @@ describe("parseFrontmatter", () => {
     assert.throws(() => parseFrontmatter("---\r\nname: x\r\n---\r\n"), /CR line endings/);
   });
 
-  test("parses all 18 plugin agents", () => {
+  test("parses all 22 plugin agents", () => {
     for (const name of AGENT_ORDER) {
       const { data } = parseFrontmatter(readFileSync(join(REPO, `plugin/agents/${name}.md`), "utf8"), name);
       assert.equal(data.name, name);
-      assert.ok(data.tools.length > 0 && data.skills.includes("crew-protocol"), name);
+      // An agent that drives the session's MCP server has no tools line, so it inherits them.
+      if (INHERITS_TOOLS.includes(name)) assert.equal(data.tools, undefined, name);
+      else assert.ok(data.tools.length > 0, name);
+      assert.ok(data.skills.includes("crew-protocol"), name);
     }
   });
 });
@@ -244,7 +248,7 @@ describe("bundle", () => {
     });
   });
 
-  test("lists the 18 agents in canonical order with derived fields", () => {
+  test("lists the 22 agents in canonical order with derived fields", () => {
     assert.deepEqual(bundle.agents.map(({ name }) => name), AGENT_ORDER);
     for (const agent of bundle.agents) {
       assert.equal(agent.short, agent.name.split("-")[0]);
@@ -308,7 +312,7 @@ describe("catalog", () => {
     catalog = buildCatalog(buildBundle(sources), sources.ru);
   });
 
-  test("has the top-level shape and all 18 agents in canonical order", () => {
+  test("has the top-level shape and all 22 agents in canonical order", () => {
     assert.deepEqual(Object.keys(catalog), ["schema", "version", "conductor", "groups", "agents"]);
     assert.equal(catalog.version, FIXTURE_VERSION);
     assert.equal(catalog.conductor, "mash-coordinator");
@@ -319,13 +323,15 @@ describe("catalog", () => {
     const nonEmpty = (value) => typeof value === "string" && value.trim().length > 0;
     for (const agent of catalog.agents) {
       assert.deepEqual(Object.keys(agent), [
-        "name", "short", "title", "role", "group", "description", "tools", "model", "effort", "maxTurns", "color",
+        "name", "short", "title", "role", "group", "description", "tools", "inheritsTools", "model", "effort", "maxTurns", "color",
         "wordCount", "sections", "ru", "installSnippet",
       ]);
       for (const key of ["name", "short", "title", "role", "group", "description", "model", "effort", "color", "installSnippet"]) {
         assert.ok(nonEmpty(agent[key]), `${agent.name}.${key}`);
       }
-      assert.ok(agent.tools.length > 0 && agent.tools.every(nonEmpty), `${agent.name}.tools`);
+      assert.equal(agent.inheritsTools, INHERITS_TOOLS.includes(agent.name), `${agent.name}.inheritsTools`);
+      if (agent.inheritsTools) assert.deepEqual(agent.tools, [], `${agent.name}.tools`);
+      else assert.ok(agent.tools.length > 0 && agent.tools.every(nonEmpty), `${agent.name}.tools`);
       assert.ok(Number.isInteger(agent.maxTurns) && agent.maxTurns > 0, `${agent.name}.maxTurns`);
       assert.ok(Number.isInteger(agent.wordCount) && agent.wordCount > 0, `${agent.name}.wordCount`);
       assert.deepEqual(Object.keys(agent.sections), ["whenToUse", "returns", "notFor"]);
@@ -339,9 +345,9 @@ describe("catalog", () => {
     }
   });
 
-  test("groups cover all 18 agents exactly once and match each agent's group", () => {
+  test("groups cover all 22 agents exactly once and match each agent's group", () => {
     const members = catalog.groups.flatMap((group) => group.members);
-    assert.equal(members.length, 18);
+    assert.equal(members.length, 22);
     assert.deepEqual([...members].sort(), [...AGENT_ORDER].sort());
     assert.deepEqual(catalog.groups, GROUPS);
     for (const agent of catalog.agents) {

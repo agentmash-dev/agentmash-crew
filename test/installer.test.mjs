@@ -906,7 +906,7 @@ test('smoke: the real dist/bundle.json installs and uninstalls cleanly', (t) => 
     return;
   }
   const bundle = verifyBundle(JSON.parse(fs.readFileSync(REAL_BUNDLE, 'utf8')));
-  assert.equal(bundle.agents.length, 18);
+  assert.equal(bundle.agents.length, 22);
 
   const repo = tempRepo();
   const result = ok(cli(['team', 'add', 'agentmash crew', '--agents', 'pipe,flex,probe', '--repo', repo], { bundle: null }));

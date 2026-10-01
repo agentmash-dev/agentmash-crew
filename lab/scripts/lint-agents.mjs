@@ -12,10 +12,10 @@ const COLORS = new Set(["red", "blue", "green", "yellow", "purple", "orange", "p
 const MODELS = new Set(["inherit", "sonnet", "opus", "haiku", "fable"]);
 const EFFORTS = new Set(["low", "medium", "high", "xhigh", "max"]);
 const TOOLS = new Set(["Read", "Write", "Edit", "Bash", "Grep", "Glob", "WebFetch", "WebSearch", "Agent", "NotebookEdit", "TodoWrite"]);
-const LAB = new Set(["hunch-hypotheses", "seal-prereg", "atlas-curator", "bench-analyst", "foil-controls", "assay-judge"]);
-const CREW = new Set(["mash-coordinator", "tally-planner", "scout-explorer", "flex-frontend", "pipe-backend", "swipe-mobile", "index-database", "patch-integrations", "batch-ml", "spell-prompts", "lingo-i18n", "probe-qa", "gavel-reviewer", "snag-debugger", "prune-refactor", "bump-dependencies", "rail-cicd", "quill-docs"]);
+const LAB = new Set(["hunch-hypotheses", "seal-prereg", "atlas-curator", "bench-analyst", "foil-controls", "assay-judge", "volt-ieee", "ribbon-isef", "tensor-mlconf", "proof-journal"]);
+const CREW = new Set(["mash-coordinator", "tally-planner", "scout-explorer", "flex-frontend", "pipe-backend", "swipe-mobile", "index-database", "patch-integrations", "batch-ml", "spell-prompts", "lingo-i18n", "probe-qa", "gavel-reviewer", "snag-debugger", "prune-refactor", "bump-dependencies", "rail-cicd", "quill-docs", "higgs-video", "plain-editor", "tempo-motion", "inspo-scrap"]);
 const KNOWN = new Set([...LAB, ...CREW]);
-const SIBLING = /\b((?:hunch|seal|atlas|bench|foil|assay|mash|tally|scout|flex|pipe|swipe|index|patch|batch|spell|lingo|probe|gavel|snag|prune|bump|rail|quill)-[a-z0-9-]+)\b/g;
+const SIBLING = /\b((?:hunch|seal|atlas|bench|foil|assay|volt|ribbon|tensor|proof|mash|tally|scout|flex|pipe|swipe|index|patch|batch|spell|lingo|probe|gavel|snag|prune|bump|rail|quill|higgs|plain|tempo|inspo)-[a-z0-9-]+)\b/g;
 const HEADINGS = ["## Lab protocol", "## Scope", "## Inputs", "## Process", "## Domain pitfalls", "## Rationalizations to reject", "## Definition of done", "## Stop and escalate", "## Report"];
 const TOKENS = ["STATUS:", ".agentmash-crew/reports/"];
 let errors = 0, warnings = 0;

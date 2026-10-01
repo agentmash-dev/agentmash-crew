@@ -4,7 +4,7 @@
 // It only acts on tool calls made by crew agents. The same file serves both installs:
 // the plugin (hooks/hooks.json), where agent_type is "agentmash-crew:<name>", and a
 // project install (.claude/agentmash-crew/crew-guard.mjs, wired in .claude/settings.json),
-// where agent_type is one of the 18 bare crew names. Lab agents from the agentmash-lab
+// where agent_type is one of the 22 bare crew names. Lab agents from the agentmash-lab
 // plugin ("agentmash-lab:<name>") run under Mash, so the crew plugin's guard covers them
 // too. The main session and every other agent pass through untouched. It denies commands that destroy other people's
 // uncommitted work in a shared tree, or that cross a human approval gate
@@ -24,6 +24,7 @@ const CREW = new Set([
   "mash-coordinator", "tally-planner", "scout-explorer", "flex-frontend", "pipe-backend", "swipe-mobile",
   "index-database", "patch-integrations", "batch-ml", "spell-prompts", "lingo-i18n", "probe-qa",
   "gavel-reviewer", "snag-debugger", "prune-refactor", "bump-dependencies", "rail-cicd", "quill-docs",
+  "higgs-video", "plain-editor", "tempo-motion", "inspo-scrap",
 ]);
 
 const RULES = [
