@@ -4,8 +4,9 @@
 // It only acts on tool calls made by crew agents. The same file serves both installs:
 // the plugin (hooks/hooks.json), where agent_type is "agentmash-crew:<name>", and a
 // project install (.claude/agentmash-crew/crew-guard.mjs, wired in .claude/settings.json),
-// where agent_type is one of the 18 bare crew names. The main session and every other
-// agent pass through untouched. It denies commands that destroy other people's
+// where agent_type is one of the 18 bare crew names. Lab agents from the agentmash-lab
+// plugin ("agentmash-lab:<name>") run under Mash, so the crew plugin's guard covers them
+// too. The main session and every other agent pass through untouched. It denies commands that destroy other people's
 // uncommitted work in a shared tree, or that cross a human approval gate
 // (crew-protocol sections 6 and 8).
 //
@@ -16,6 +17,7 @@ import { readFileSync, realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 const PREFIX = "agentmash-crew:";
+const LAB_PREFIX = "agentmash-lab:";
 
 // Bare ids, as used when the crew lives in the project's .claude/agents/.
 const CREW = new Set([
@@ -51,6 +53,8 @@ const RULES = [
     why: "recursive delete of a root, home, repo or wildcard path", fix: "delete only files you created, by explicit path" },
   { id: "db-destroy", re: /\b(?:prisma\s+migrate\s+reset|migrate\s+reset|db:drop|db:reset|dropdb|rails\s+db:schema:load|DROP\s+(?:DATABASE|TABLE|SCHEMA)|TRUNCATE(?:\s+TABLE)?\s+\w)/i,
     why: "destroys database data", fix: "return BLOCKED approval-required with the exact command" },
+  { id: "raw-data", re: /\b(?:rm|shred|truncate)\b[^|;&]*(?:^|[\s'"\/])data\/raw\b/,
+    why: "raw data is write-once (lab-protocol section 7)", fix: "write derived files to data/derived/; the PI decides about raw data" },
   { id: "force-audit", re: /\b(?:npm|pnpm|yarn)\s+audit\s+fix\b[^|;&]*--force\b/,
     why: "forces major upgrades silently", fix: "bump-dependencies upgrades packages one by one with changelog review" },
   { id: "publish", re: /\b(?:npm|pnpm|yarn)\s+(?:npm\s+)?publish\b|\bcargo\s+publish\b|\btwine\s+upload\b|\bvercel\s+(?:--prod|deploy\s+--prod)\b/,
@@ -66,7 +70,7 @@ function readInput() {
 }
 
 export function isCrewAgent(agentType) {
-  return agentType.startsWith(PREFIX) || CREW.has(agentType);
+  return agentType.startsWith(PREFIX) || agentType.startsWith(LAB_PREFIX) || CREW.has(agentType);
 }
 
 export function check(input) {
@@ -84,7 +88,7 @@ export function check(input) {
           permissionDecision: "deny",
           permissionDecisionReason:
             `agentmash-crew guard (${rule.id}): this command ${rule.why}. Instead: ${rule.fix}. ` +
-            `See crew-protocol sections 6 and 8. If you are truly blocked, stop and return BLOCKED with the escalation block.`,
+            `See crew-protocol sections 6 and 8 (lab-protocol sections 7 and 8 for lab agents). If you are truly blocked, stop and return BLOCKED with the escalation block.`,
         },
       };
     }
