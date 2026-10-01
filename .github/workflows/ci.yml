@@ -26,15 +26,18 @@ jobs:
         with:
           node-version: 22
 
-      - name: Unit tests (bundle, installer, crew-guard hook)
+      - name: Unit tests (bundle, installer, crew-guard hook, lab consistency)
         run: npm test
 
-      - name: Bundle is up to date, protocol summary in sync, agents lint clean
+      - name: Bundle is up to date, protocol summaries in sync, crew and lab agents lint clean
         run: npm run check
 
       # Manifest validation needs no Claude account; the CLI version is pinned so results are reproducible.
       - name: Validate plugin
         run: npx -y @anthropic-ai/claude-code@2.1.283 plugin validate --strict plugin
+
+      - name: Validate lab plugin
+        run: npx -y @anthropic-ai/claude-code@2.1.283 plugin validate --strict lab
 
       - name: Validate marketplace
         run: npx -y @anthropic-ai/claude-code@2.1.283 plugin validate --strict .

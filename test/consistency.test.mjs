@@ -18,7 +18,7 @@ test('package.json, plugin.json, marketplace.json, the bundle and the catalog ca
   const { version } = readJson('package.json');
   assert.equal(readJson('plugin/.claude-plugin/plugin.json').version, version);
   const marketplace = readJson('.claude-plugin/marketplace.json');
-  assert.deepEqual(marketplace.plugins.map((plugin) => plugin.version), [version]);
+  assert.equal(marketplace.plugins.find((plugin) => plugin.name === 'agentmash-crew').version, version);
   assert.equal(bundle.meta.version, version);
   assert.equal(readJson('catalog.json').version, version);
 });
