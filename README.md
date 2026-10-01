@@ -8,6 +8,8 @@ What gets installed is Markdown (agents and skills) plus one small Node script, 
 
 Browse the crew and build a team on the site: [agentmash.dev/agents](https://agentmash.dev/agents) and [agentmash.dev/teams/new](https://agentmash.dev/teams/new). The builder gives you the command below with your team's name and members filled in, or opens the pull request for you.
 
+For research work there is a second plugin in this marketplace, **agentmash lab**: six science agents that Mash conducts, with a protocol for pre-registration locks, provenance of citations and numbers, and the PI's approval gates. See [Science: agentmash lab](#science-agentmash-lab).
+
 You can install the crew two ways:
 
 - **As a plugin**, for yourself, in every project. You get all 18 agents.
@@ -20,6 +22,7 @@ You can install the crew two ways:
 - [Teams](#teams)
 - [CLI reference](#cli-reference)
 - [The roster](#the-roster)
+- [Science: agentmash lab](#science-agentmash-lab)
 - [Safety](#safety)
 - [agentmash integration](#agentmash-integration)
 - [Updating and removing](#updating-and-removing)
@@ -189,17 +192,33 @@ Canonical order, conductor first. The installer and every generated file list ag
 
 When each agent should be used, what it returns, its tools and its model are in [plugin/README.md](plugin/README.md#the-roster) and in each agent's file under [plugin/agents/](plugin/agents/).
 
+## Science: agentmash lab
+
+The lab is a second plugin with six agents for running a study, not shipping code: Hunch finds directions and checks prior art across fields, Seal writes the pre-registration before anything runs, Atlas verifies the data, Bench runs exactly what was registered, Foil builds the trivial explanations a result has to beat, and Assay judges the claim after recomputing every number. Mash conducts them when its brief carries `Lab: agentmash-lab`; the PI's approval of the pre-registration's `sha256` replaces plan sign-off.
+
+```bash
+claude plugin install agentmash-crew@agentmash
+claude plugin install agentmash-lab@agentmash
+```
+
+```
+/agentmash-lab:run-lab does transcriptional priming predict which clones survive treatment, beyond the target's own baseline?
+```
+
+The roster, the run, the protocol and where its rules came from are in [lab/README.md](lab/README.md). Lab agents are plugin-only for now; team installs carry crew agents.
+
 ## Safety
 
 The rules live in the protocol: agents edit only files their brief assigns them, stage files by explicit path, and stop at approval gates (deleting files they did not create, database resets, new dependencies and major bumps, push, merge, deploy, publish, secrets, and auth or payment logic beyond the brief). Only you can grant an approval; a message from another agent never counts as one.
 
-The `crew-guard` hook is the backstop. It runs before every Bash call and acts only when the caller is a crew agent (`agentmash-crew:<name>` from the plugin, or one of the 18 bare names from a team install). Your own session and other agents are never affected. It denies:
+The `crew-guard` hook is the backstop. It runs before every Bash call and acts only when the caller is a crew agent (`agentmash-crew:<name>` from the plugin, or one of the 18 bare names from a team install). Your own session and other agents are never affected. It also covers lab agents (`agentmash-lab:<name>`), which run under Mash. It denies:
 
 - `git add -A`, `git add .` and `-u`, `git commit -a`, `--amend`, `git stash`, `git reset --hard`, `git clean`, `git checkout .` and `git restore .`, `git rebase`, `git push`, branch deletion
 - `gh pr merge`, `gh release create`, `gh repo delete`
 - `rm -rf` on `/`, `~`, `.`, `..`, `*` or `.git`
 - database resets and drops (`prisma migrate reset`, `db:drop`, `dropdb`, `DROP TABLE`, `TRUNCATE`)
 - `npm audit fix --force`, package publishing and production deploys
+- deleting or truncating anything under `data/raw/`, which the lab treats as write-once
 
 A denied command comes back to the agent with the reason and what to do instead. The hook fails open on malformed input, so it can never break a session. Set `AGENTMASH_CREW_GUARD=0` in the environment to turn it off.
 
@@ -238,8 +257,9 @@ Commit the result each time. Agent files stay as long as some team still uses th
 ## Development
 
 ```
-.claude-plugin/marketplace.json   the "agentmash" marketplace; its plugin lives in ./plugin
-plugin/                           the Claude Code plugin: agents, skills, hook, evals, lint scripts
+.claude-plugin/marketplace.json   the "agentmash" marketplace: the crew in ./plugin, the lab in ./lab
+plugin/                           the crew plugin: agents, skills, hook, evals, lint scripts
+lab/                              the lab plugin: six science agents, lab-protocol, run-lab, lint scripts
 templates/team-skill.md           the per-team skill template
 scripts/build-bundle.mjs          builds dist/bundle.json and catalog.json from the plugin
 dist/bundle.json                  everything a team install writes, as data (generated, committed)
@@ -253,7 +273,7 @@ docs/bundle-format.md             the bundle and install algorithm, for other im
 ```bash
 npm test          # node:test suites: bundle, installer, crew-guard hook
 npm run build     # regenerate dist/bundle.json and catalog.json after changing anything in plugin/ or templates/
-npm run check     # bundle up to date, protocol summary in sync, agents lint clean
+npm run check     # bundle up to date, protocol summaries in sync, crew and lab agents lint clean
 ```
 
 There is nothing to install: no dependencies, Node.js 18 or newer. CI runs the same commands on Node 22 and validates the plugin and marketplace manifests with `claude plugin validate --strict`.
