@@ -9,8 +9,8 @@
     {
       "name": "agentmash-crew",
       "displayName": "agentmash crew",
-      "description": "18 role agents with a shared crew protocol for parallel Claude Code work on one repository.",
-      "version": "1.2.0",
+      "description": "22 role agents with a shared crew protocol for parallel Claude Code work on one repository.",
+      "version": "1.3.0",
       "author": {
         "name": "Damir Iskakov",
         "url": "https://agentmash.dev"
@@ -29,8 +29,8 @@
     {
       "name": "agentmash-lab",
       "displayName": "agentmash lab",
-      "description": "6 science agents run by the crew's coordinator: hypotheses with cross-field prior art, pre-registration locks, verified data, registered analyses, controls and an evidence judge.",
-      "version": "0.1.0",
+      "description": "10 science agents run by the crew's coordinator: hypotheses with cross-field prior art, pre-registration locks, verified data, registered analyses, controls, an evidence judge, and venue agents for IEEE, ISEF, ML conferences and journals.",
+      "version": "0.2.0",
       "author": {
         "name": "Damir Iskakov",
         "url": "https://agentmash.dev"

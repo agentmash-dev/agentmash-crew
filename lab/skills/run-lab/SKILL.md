@@ -41,6 +41,8 @@ Dispatch `agentmash-crew:mash-coordinator` with a brief that carries the line `L
 | 5 | seal-prereg, mode `conform` | results, code | the per-quantity conformance table |
 | 6 | assay-judge | everything above | `MERGE`, `REVISE`, `CLOSE` or `ESCALATE` per result |
 | gate | **the PI** | verdicts | SSOT updates, posting, publishing |
+| 7 | the venue's agent: volt-ieee, ribbon-isef, tensor-mlconf or proof-journal | `MERGE` verdicts the PI accepted, the target venue | requirement matrix, the paper in the venue's format, cuts as proposed diffs, the PI's submit list |
+| gate | **the PI** | the submit list | content cuts, accounts, fees, signatures, pressing submit |
 
 The lock is the step people skip, so do not. Show the PI the whole pre-registration, not a summary. Record in `.agentmash-crew/approvals/<task-id>.md` their words verbatim, the path and `sha256: <hash>`. bench-analyst and foil-controls check that hash before a confirmatory run and refuse on a mismatch.
 
@@ -67,5 +69,9 @@ Tell the PI, in this order: what was registered, which predictions held and whic
 | Run the registered analysis; regenerate figures and tables | bench-analyst |
 | Baselines, nulls, confound partials; "is this just depth or gene count" | foil-controls |
 | Is this claim supported; before the SSOT or a submission | assay-judge |
+| Take the judged paper to IEEE | volt-ieee |
+| Regeneron ISEF or an affiliated fair: forms, approvals, board, interview | ribbon-isef |
+| NeurIPS, ICML, ICLR, an ML workshop; rebuttal, camera-ready | tensor-mlconf |
+| A journal submission or response to reviewers | proof-journal |
 | Run a study end to end | mash-coordinator |
 | Package installs for the analysis environment | bump-dependencies |

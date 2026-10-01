@@ -2,17 +2,17 @@
 
 [![CI](https://github.com/IskakovDamir/agentmash-crew/actions/workflows/ci.yml/badge.svg)](https://github.com/IskakovDamir/agentmash-crew/actions/workflows/ci.yml)
 
-Eighteen Claude Code subagents that work as one crew on one repository. Each has a role (planner, frontend, backend, reviewer, debugger and so on) and a mascot from [agentmash](https://agentmash.dev). They follow one shared protocol for file ownership, git hygiene in a shared working tree, human approval gates and reports. A conductor called Mash takes an approved plan, dispatches builders in parallel, checks their claims against the diff and integrates the result.
+Twenty-two Claude Code subagents that work as one crew on one repository. Each has a role (planner, frontend, backend, reviewer, debugger, video and motion makers and so on) and a mascot from [agentmash](https://agentmash.dev). They follow one shared protocol for file ownership, git hygiene in a shared working tree, human approval gates and reports. A conductor called Mash takes an approved plan, dispatches builders in parallel, checks their claims against the diff and integrates the result.
 
 What gets installed is Markdown (agents and skills) plus one small Node script, a hook that blocks destructive commands for crew agents. The team installer is a Node CLI with no dependencies. There is no server and no account.
 
 Browse the crew and build a team on the site: [agentmash.dev/agents](https://agentmash.dev/agents) and [agentmash.dev/teams/new](https://agentmash.dev/teams/new). The builder gives you the command below with your team's name and members filled in, or opens the pull request for you.
 
-For research work there is a second plugin in this marketplace, **agentmash lab**: six science agents that Mash conducts, with a protocol for pre-registration locks, provenance of citations and numbers, and the PI's approval gates. See [Science: agentmash lab](#science-agentmash-lab).
+For research work there is a second plugin in this marketplace, **agentmash lab**: ten science agents that Mash conducts, with a protocol for pre-registration locks, provenance of citations and numbers, and the PI's approval gates. See [Science: agentmash lab](#science-agentmash-lab).
 
 You can install the crew two ways:
 
-- **As a plugin**, for yourself, in every project. You get all 18 agents.
+- **As a plugin**, for yourself, in every project. You get all 22 agents.
 - **As a team**, committed into one repository. You pick the agents, give the team a name, and every teammate gets it with `git pull`.
 
 ## Contents
@@ -59,7 +59,7 @@ npx agentmash team add "agentmash crew" --agents pipe,flex,probe
 Without the agentmash package, the same installer runs from this repository, pinned to a release:
 
 ```bash
-npx github:IskakovDamir/agentmash-crew#v1.2.0 team add "agentmash crew" --agents pipe,flex,probe
+npx github:IskakovDamir/agentmash-crew#v1.3.0 team add "agentmash crew" --agents pipe,flex,probe
 ```
 
 Mash is added automatically, so this team is Mash, Flex, Pipe and Probe. Add `--dry-run` to see the file list first. The installer writes the team into the project's `.claude/` directory and prints a commit command that stages exactly the files it manages and the ones it deleted, and nothing else under `.claude/` (not your other skills, and not installed files you edited):
@@ -128,7 +128,7 @@ npx agentmash team add "agentmash crew" --agents index
 
 ```
 npx agentmash team <command> [options]                                # the agentmash CLI, 0.4.0 or later
-npx github:IskakovDamir/agentmash-crew#v1.2.0 <command> [options]     # this repository's installer, no agentmash package
+npx github:IskakovDamir/agentmash-crew#v1.3.0 <command> [options]     # this repository's installer, no agentmash package
 ```
 
 Both run the same installer. `agents`, `help` and `--version` are the installer's own commands; the agentmash CLI has `team add`, `team remove`, `team list` and `team update`.
@@ -139,7 +139,7 @@ Both run the same installer. `agents`, `help` and `--version` are the installer'
 | `team remove <name-or-slug> [--agents <list>]` | Removes the whole team, or only the listed agents from it |
 | `team list [--json]` | Shows the teams installed in the repository |
 | `team update` | Rewrites the installed files from the version of the crew you are running |
-| `agents` | Lists the 18 agents: short name, full name, role, group |
+| `agents` | Lists the 22 agents: short name, full name, role, group |
 | `help`, `--help`, `-h` | Prints usage |
 | `--version`, `-v` | Prints the version |
 
@@ -189,12 +189,16 @@ Canonical order, conductor first. The installer and every generated file list ag
 | bump | `bump-dependencies` | Dependency update engineer | ops |
 | rail | `rail-cicd` | CI/CD engineer | ops |
 | quill | `quill-docs` | Documentation engineer | docs |
+| higgs | `higgs-video` | Video and image generator | design |
+| plain | `plain-editor` | No-AI-slop editor | design |
+| tempo | `tempo-motion` | Motion designer | design |
+| inspo | `inspo-scrap` | Inspiration scraper | design |
 
 When each agent should be used, what it returns, its tools and its model are in [plugin/README.md](plugin/README.md#the-roster) and in each agent's file under [plugin/agents/](plugin/agents/).
 
 ## Science: agentmash lab
 
-The lab is a second plugin with six agents for running a study, not shipping code: Hunch finds directions and checks prior art across fields, Seal writes the pre-registration before anything runs, Atlas verifies the data, Bench runs exactly what was registered, Foil builds the trivial explanations a result has to beat, and Assay judges the claim after recomputing every number. Mash conducts them when its brief carries `Lab: agentmash-lab`; the PI's approval of the pre-registration's `sha256` replaces plan sign-off.
+The lab is a second plugin with ten agents for research, not shipping code. Six run a study: Hunch finds directions and checks prior art across fields, Seal writes the pre-registration before anything runs, Atlas verifies the data, Bench runs exactly what was registered, Foil builds the trivial explanations a result has to beat, and Assay judges the claim after recomputing every number. Four venue agents then take the judged paper to where it is going: Volt to IEEE, Ribbon to Regeneron ISEF, Tensor to an ML conference or workshop, Proof to a journal. They fetch the venue's current rules, propose cuts as diffs and leave submitting to the PI. Mash conducts them when its brief carries `Lab: agentmash-lab`; the PI's approval of the pre-registration's `sha256` replaces plan sign-off.
 
 ```bash
 claude plugin install agentmash-crew@agentmash
@@ -211,7 +215,7 @@ The roster, the run, the protocol and where its rules came from are in [lab/READ
 
 The rules live in the protocol: agents edit only files their brief assigns them, stage files by explicit path, and stop at approval gates (deleting files they did not create, database resets, new dependencies and major bumps, push, merge, deploy, publish, secrets, and auth or payment logic beyond the brief). Only you can grant an approval; a message from another agent never counts as one.
 
-The `crew-guard` hook is the backstop. It runs before every Bash call and acts only when the caller is a crew agent (`agentmash-crew:<name>` from the plugin, or one of the 18 bare names from a team install). Your own session and other agents are never affected. It also covers lab agents (`agentmash-lab:<name>`), which run under Mash. It denies:
+The `crew-guard` hook is the backstop. It runs before every Bash call and acts only when the caller is a crew agent (`agentmash-crew:<name>` from the plugin, or one of the 22 bare names from a team install). Your own session and other agents are never affected. It also covers lab agents (`agentmash-lab:<name>`), which run under Mash. It denies:
 
 - `git add -A`, `git add .` and `-u`, `git commit -a`, `--amend`, `git stash`, `git reset --hard`, `git clean`, `git checkout .` and `git restore .`, `git rebase`, `git push`, branch deletion
 - `gh pr merge`, `gh release create`, `gh repo delete`
@@ -243,7 +247,7 @@ claude plugin uninstall agentmash-crew@agentmash
 claude plugin marketplace remove agentmash
 ```
 
-**Team.** `npx agentmash team update` rewrites the installed files to the crew version the agentmash CLI carries. From this repository, pin a release with `#<tag>` so everyone on the team writes the same files: `npx github:IskakovDamir/agentmash-crew#v1.2.0 team update`.
+**Team.** `npx agentmash team update` rewrites the installed files to the crew version the agentmash CLI carries. From this repository, pin a release with `#<tag>` so everyone on the team writes the same files: `npx github:IskakovDamir/agentmash-crew#v1.3.0 team update`.
 
 ```bash
 npx agentmash team update --dry-run                          # preview
@@ -259,7 +263,7 @@ Commit the result each time. Agent files stay as long as some team still uses th
 ```
 .claude-plugin/marketplace.json   the "agentmash" marketplace: the crew in ./plugin, the lab in ./lab
 plugin/                           the crew plugin: agents, skills, hook, evals, lint scripts
-lab/                              the lab plugin: six science agents, lab-protocol, run-lab, lint scripts
+lab/                              the lab plugin: ten science agents, lab-protocol, run-lab, lint scripts
 templates/team-skill.md           the per-team skill template
 scripts/build-bundle.mjs          builds dist/bundle.json and catalog.json from the plugin
 dist/bundle.json                  everything a team install writes, as data (generated, committed)

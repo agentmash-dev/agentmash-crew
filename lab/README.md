@@ -1,6 +1,6 @@
 # agentmash lab
 
-Six Claude Code subagents for science, conducted by the crew's coordinator, Mash. One finds directions and checks whether they were already done under another field's name. One writes the pre-registration before anything runs. One gets the data and proves it is what it claims to be. One runs exactly what was registered. One builds the trivial explanations the result has to beat. One judges the claim against standards it fetched, after recomputing every number itself.
+Ten Claude Code subagents for science, conducted by the crew's coordinator, Mash. One finds directions and checks whether they were already done under another field's name. One writes the pre-registration before anything runs. One gets the data and proves it is what it claims to be. One runs exactly what was registered. One builds the trivial explanations the result has to beat. One judges the claim against standards it fetched, after recomputing every number itself. Four take the judged paper to where it is going: Volt to IEEE, Ribbon to Regeneron ISEF, Tensor to an ML conference, Proof to a journal. Each fetches that venue's current rules instead of trusting memory.
 
 They share one protocol, [`lab-protocol`](skills/lab-protocol/SKILL.md), for the study's source of truth, the pre-registration lock, provenance of citations and numbers, data rules and the PI's approval gates. Code review catches code that is wrong. This protocol is about the other failure: a result that is well formed and wrong.
 
@@ -49,6 +49,10 @@ Is the claim in results/h2.json supported? Recount everything.                  
 | [`bench-analyst`](agents/bench-analyst.md) | Bench | a locked pre-registration is ready to run, or figures and tables must regenerate from results | writes analysis code and results | `inherit` |
 | [`foil-controls`](agents/foil-controls.md) | Foil | a result needs the trivial explanation it must beat: own baselines, low-order statistics, nulls, confounds | writes control code and results | `inherit` |
 | [`assay-judge`](agents/assay-judge.md) | Assay | before anything enters the source of truth or a submission, or "is this claim supported" | web, read-only (+ report) | `opus` |
+| [`volt-ieee`](agents/volt-ieee.md) | Volt | the paper is headed to an IEEE conference or journal | web, writes `submission/ieee/` | `inherit` |
+| [`ribbon-isef`](agents/ribbon-isef.md) | Ribbon | a high-school project is headed to Regeneron ISEF or an affiliated fair | web, writes `submission/isef/` | `inherit` |
+| [`tensor-mlconf`](agents/tensor-mlconf.md) | Tensor | the paper is going to an ML conference or workshop, a rebuttal is due, or a camera-ready | web, writes `submission/mlconf/` | `inherit` |
+| [`proof-journal`](agents/proof-journal.md) | Proof | a judged paper is headed to a journal, or reviewer comments came back | web, writes `submission/journal/` | `inherit` |
 
 The judge runs on `opus` and must not judge work its own session produced. For less self-preference, set it to a different model from the one your researchers run on.
 
@@ -64,9 +68,11 @@ flowchart LR
   F --> C[seal-prereg<br/>conformance]
   C --> J[assay-judge<br/>verdict]
   J --> P{PI<br/>source of truth}
+  P --> V[venue agent<br/>IEEE, ISEF, ML, journal]
+  V --> G{PI<br/>submits}
 ```
 
-Mash (`agentmash-crew:mash-coordinator`) runs the waves when its brief carries `Lab: agentmash-lab`. The pre-registration is the plan, and the PI's approval of its exact `sha256` is the sign-off: Bench and Foil refuse a confirmatory run when the file's hash does not match. Assay replaces Gavel for claims; Gavel still reviews code. A `MERGE` from Assay goes to the PI, never straight into the source of truth.
+Mash (`agentmash-crew:mash-coordinator`) runs the waves when its brief carries `Lab: agentmash-lab`. The pre-registration is the plan, and the PI's approval of its exact `sha256` is the sign-off: Bench and Foil refuse a confirmatory run when the file's hash does not match. Assay replaces Gavel for claims; Gavel still reviews code. A `MERGE` from Assay goes to the PI, never straight into the source of truth. Once the PI accepts the verdicts, one venue agent prepares the paper for where it is going and returns a submit list; cutting content, accounts, fees and the submit button stay with the PI.
 
 ## The protocol in one screen
 
