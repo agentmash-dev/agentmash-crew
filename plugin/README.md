@@ -1,6 +1,6 @@
 # agentmash crew
 
-Eighteen Claude Code subagents that work as one crew on one repository. A planner splits the work so no two agents own the same file. A coordinator dispatches builders in parallel and integrates what they produce. Reviewers verify claims against the diff instead of trusting reports. A debugger finds root causes before anyone patches. All of them follow one shared protocol for ownership, [agentmash](https://agentmash.dev) heads-ups, git hygiene in a shared working tree, human approval gates and machine-readable reports.
+Twenty-two Claude Code subagents that work as one crew on one repository. A planner splits the work so no two agents own the same file. A coordinator dispatches builders in parallel and integrates what they produce. Reviewers verify claims against the diff instead of trusting reports. A debugger finds root causes before anyone patches. All of them follow one shared protocol for ownership, [agentmash](https://agentmash.dev) heads-ups, git hygiene in a shared working tree, human approval gates and machine-readable reports.
 
 Each agent is also a vinyl-toy mascot from [agentmash](https://agentmash.dev).
 
@@ -10,7 +10,7 @@ This file covers the plugin in depth. For installing a named team into a reposit
 
 | Path | What it is |
 |---|---|
-| `agents/*.md` | 18 role agents, one file each |
+| `agents/*.md` | 22 role agents, one file each |
 | `skills/crew-protocol/` | The shared protocol every agent preloads: task files, ownership map, heads-up procedure, git rules, approval gates, evidence standard, status values and report contract |
 | `skills/run-crew/` | Playbook for the main session to lead a crew run: scout, plan, human sign-off, dispatch waves, review, integrate |
 | `hooks/` | A PreToolUse guard that blocks destructive git and approval-gated commands for crew agents only, with tests |
@@ -77,6 +77,10 @@ You can also name the agent: "Use the agentmash-crew:index-database agent to wri
 | [`tally-planner`](agents/tally-planner.md) | Tally | a goal has no approved plan yet and is too big for one agent, when asked to 'plan this', 'break this down' or 'how should we architect X', or when two agents keep colliding on files | writes plans only | `inherit` |
 | [`scout-explorer`](agents/scout-explorer.md) | Scout | someone asks how X works, where Y is handled or to map this repo, when the crew must learn an unfamiliar codebase, or before planning a change in an area no crew agent has read | read-only (+ report) | `sonnet` |
 | [`quill-docs`](agents/quill-docs.md) | Quill | after a feature lands, when asked to 'document X', when a README is stale, onboarding docs for people are missing, a release needs a changelog entry, or tally-planner's ADR draft must become a record | writes owned files | `sonnet` |
+| [`higgs-video`](agents/higgs-video.md) | Higgs | a task needs generated images or video for the product (hero shots, product clips, ads, b-roll, social cuts) made through the Higgsfield MCP server | session tools: Higgsfield MCP, writes owned files | `inherit` |
+| [`plain-editor`](agents/plain-editor.md) | Plain | user-facing copy or interface reads or looks machine-made (UI strings, landing pages, docs, emails, error messages, onboarding, store listings) or before a launch | audit; writes granted copy in `edit` mode | `inherit` |
+| [`tempo-motion`](agents/tempo-motion.md) | Tempo | asked for an Apple-style, keynote-style or launch recap video of the user's product, kinetic typography, or any Remotion composition | writes owned files | `inherit` |
+| [`inspo-scrap`](agents/inspo-scrap.md) | Inspo | a brief needs design references or a visual direction before UI work: examples for a landing page, app screen, component or mood, or 'find sites like X' | session tools: Claude in Chrome, writes `inspo/` | `inherit` |
 
 Model tiers follow the role. Reviewers and investigators run on `opus` because a missed bug costs more than the tokens. Explorers, docs and routine upgrades run on `sonnet`. Builders and coordinators `inherit` the session model, so you choose.
 
@@ -135,7 +139,7 @@ The crew works without agentmash too. You only lose the cross-developer heads-up
 
 ## The guard hook
 
-`hooks/crew-guard.mjs` runs before every Bash call. It acts only when the caller is a crew agent: `agent_type` starts with `agentmash-crew:` (plugin install) or equals one of the 18 bare agent names (team install, where the same script is copied to `.claude/agentmash-crew/crew-guard.mjs` and registered in `.claude/settings.json`). Your own session and every other agent are never affected. It denies, with a reason that points back to the protocol:
+`hooks/crew-guard.mjs` runs before every Bash call. It acts only when the caller is a crew agent: `agent_type` starts with `agentmash-crew:` (plugin install) or equals one of the 22 bare agent names (team install, where the same script is copied to `.claude/agentmash-crew/crew-guard.mjs` and registered in `.claude/settings.json`). Your own session and every other agent are never affected. It denies, with a reason that points back to the protocol:
 
 - `git add -A` / `.` / `-u`, `git commit -a`, `--amend`, `stash`, `reset --hard`, `clean`, `checkout .` / `restore .`, `rebase`, `push`, branch deletion
 - `gh pr merge`, `gh release create`, `gh repo delete`

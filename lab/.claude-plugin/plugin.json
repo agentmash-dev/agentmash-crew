@@ -1,8 +1,8 @@
 {
   "name": "agentmash-lab",
   "displayName": "agentmash lab",
-  "version": "0.1.0",
-  "description": "Six science agents run by the agentmash crew's coordinator: a hypothesis scout with cross-field prior-art checks, a pre-registration registrar, a dataset curator, an analyst, a controls builder and an evidence judge, sharing one protocol for pre-registration locks, provenance and PI approval gates.",
+  "version": "0.2.0",
+  "description": "Ten science agents run by the agentmash crew's coordinator: a hypothesis scout with cross-field prior-art checks, a pre-registration registrar, a dataset curator, an analyst, a controls builder, an evidence judge, and four venue agents that take a judged paper to IEEE, Regeneron ISEF, an ML conference or a journal, sharing one protocol for pre-registration locks, provenance and PI approval gates.",
   "author": {
     "name": "Damir Iskakov",
     "url": "https://agentmash.dev"
@@ -17,6 +17,9 @@
     "pre-registration",
     "reproducibility",
     "computational-biology",
-    "multi-agent"
+    "multi-agent",
+    "ieee",
+    "isef",
+    "peer-review"
   ]
 }

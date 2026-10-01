@@ -97,3 +97,7 @@ With a named team, an agent below that is not on the roster means the missing-ro
 | Package upgrades, advisories, lockfiles | bump-dependencies |
 | CI, builds, Docker, deploy scripts | rail-cicd |
 | READMEs, guides, ADRs, changelog | quill-docs |
+| Generated images and video (Higgsfield MCP) | higgs-video |
+| Copy and design that read or look machine-made, across the product | plain-editor |
+| Apple-style recap or launch videos in Remotion | tempo-motion |
+| Design references from Pinterest, 21st.dev, Dribbble and the like (Claude in Chrome) | inspo-scrap |

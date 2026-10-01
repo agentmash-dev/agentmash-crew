@@ -1,6 +1,6 @@
 # Bundle format and team install algorithm
 
-Status: schema 1, agentmash-crew 1.2.0.
+Status: schema 1, agentmash-crew 1.3.0.
 
 This document is for people who reimplement the team install outside this repository, such as the agentmash CLI (`npx agentmash team add ...`) and the agentmash.dev web installer. The reference implementation is `lib/team-plan.mjs` (pure functions) and `lib/install.mjs` (file system) behind `bin/agentmash-crew.mjs`.
 
@@ -32,7 +32,7 @@ Fetch a released bundle by tag from jsDelivr:
 https://cdn.jsdelivr.net/gh/IskakovDamir/agentmash-crew@v<version>/dist/bundle.json
 ```
 
-The tag is `v` followed by `meta.version`, for example `v1.2.0`. Pin a tag: a branch URL can change under a cached installer.
+The tag is `v` followed by `meta.version`, for example `v1.3.0`. Pin a tag: a branch URL can change under a cached installer.
 
 ### Plugin flavor and project flavor
 
@@ -101,7 +101,7 @@ The bundle is one UTF-8 JSON document, serialized as `JSON.stringify(bundle, nul
 | `meta.addCommand` | string | Command template shown to users for adding an agent to a team. `<team>` and `<agent>` are literal tokens (see `{{add_command}}` in section 6). The reference bundle names the agentmash CLI (`npx agentmash`, 0.4.0 or later), which vendors this installer. |
 | `meta.hook` | object | The one settings hook group an install adds (section 8). `marker` is the substring that identifies it. |
 | `meta.manifestPath` | string | Where the manifest lives: `.claude/agentmash-crew/teams.json`. |
-| `agents` | array | All 18 agents in canonical order (below). |
+| `agents` | array | All 22 agents in canonical order (below). |
 | `agents[].name` | string | Full agent name, also the agent file's frontmatter `name`. |
 | `agents[].short` | string | The part of `name` before the first hyphen. |
 | `agents[].title` | string | `short` capitalized: `Mash`. |
@@ -138,6 +138,10 @@ Everywhere members are listed (the bundle, `teams.json`, rendered placeholders),
 | 16 | bump-dependencies | bump | ops |
 | 17 | rail-cicd | rail | ops |
 | 18 | quill-docs | quill | docs |
+| 19 | higgs-video | higgs | design |
+| 20 | plain-editor | plain | design |
+| 21 | tempo-motion | tempo | design |
+| 22 | inspo-scrap | inspo | design |
 
 The canonical order is the order of `bundle.agents`. An implementation SHOULD take it from the bundle rather than hard-code it.
 
@@ -263,7 +267,7 @@ The template uses only these placeholders. Each is substituted literally: no esc
 | `{{skill_name}}` | `team-` + slug | `team-agentmash-crew` |
 | `{{members_inline}}` | Member full names in canonical order, joined with `, ` | `mash-coordinator, flex-frontend, pipe-backend, probe-qa` |
 | `{{roster_table}}` | A markdown table: header and separator rows, then one row per member in canonical order with the agent's `title`, its `name` in backticks and its `role` | see section 11 |
-| `{{missing_inline}}` | Crew agents not in the team, same format as `{{members_inline}}`, or `none` when the team has all 18 | `tally-planner, scout-explorer, swipe-mobile, …` |
+| `{{missing_inline}}` | Crew agents not in the team, same format as `{{members_inline}}`, or `none` when the team has all 22 | `tally-planner, scout-explorer, swipe-mobile, …` |
 | `{{add_command}}` | `meta.addCommand` with `<team>` replaced by the display name in double quotes; `<agent>` stays literal | `npx agentmash team add "agentmash crew" --agents <agent>` |
 
 The template's frontmatter puts the description in double quotes, and `{{add_command}}` puts the name in double quotes on a shell command line that users copy. That is why names containing `"`, `\`, `$`, `` ` `` or `!` are rejected (section 5): with literal substitution they would break the YAML, or expand in bash, zsh or PowerShell so that the command addresses another team.

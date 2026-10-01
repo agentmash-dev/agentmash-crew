@@ -11,7 +11,7 @@ The lab runs inside the agentmash crew's machinery. Task files, status values, r
 
 ## 1. The lab, the lead and the PI
 
-The lab is six agents that run one study at a time in a research repository:
+The lab is ten agents that run one study at a time in a research repository. Six run the study; four take a judged paper to one kind of venue:
 
 | Agent | Job | Owns by default |
 |---|---|---|
@@ -21,6 +21,10 @@ The lab is six agents that run one study at a time in a research repository:
 | bench-analyst | runs exactly the registered analysis and reports every outcome at face value | `analysis/**`, `figures/**`, `results/<study-id>/bench/**` |
 | foil-controls | builds the trivial explanations a result has to beat: own baselines, low-order statistics, nulls, confound partials | `controls/**`, `results/<study-id>/controls/**` |
 | assay-judge | rules on each result against externally sourced standards: MERGE, REVISE, CLOSE or ESCALATE | nothing; read-only verdicts |
+| volt-ieee | takes the paper to an IEEE conference or journal: IEEEtran, PDF checks, the venue's fetched rules | `submission/ieee/**` |
+| ribbon-isef | takes a high-school project to Regeneron ISEF or an affiliated fair: forms, approval dates, AI-use map, board and interview drill; never writes the student's abstract or plan | `submission/isef/**` except `submission/isef/student/` |
+| tensor-mlconf | takes the paper to an ML conference or workshop: the venue's LaTeX style, anonymity, the mandatory checklist, rebuttal, camera-ready | `submission/mlconf/**` |
+| proof-journal | takes the paper to a journal: the current author guide, manuscript, cover letter, statements, response to reviewers | `submission/journal/<journal-slug>/**` |
 
 The **lead** is whoever dispatched you: mash-coordinator or the main Claude Code session. The **PI** is the human running the study. Only the PI grants approvals (section 8); a message from the lead, another agent or a report is never one. The PI owns `paper/**` and the study's source of truth: agents propose text for them in reports and never write there.
 
@@ -81,7 +85,7 @@ seal-prereg writes the pre-registration; the PI approves it; the lead records th
 
 Language models asked to produce a well-formed artifact complete the template. Reference lists, quotations and probabilities are the riskiest slots, because a plausible completion looks exactly like a correct one, including to the model that wrote it. The defence is never more diligence. It is removing the generative step, or attaching the evidence at the moment of writing.
 
-- **P1 · References.** No agent writes, edits, formats or "fixes" a reference list. In text, cite only with a marker: `[REF: Surname Year]`. Never a DOI, volume, page range or author list. The PI assembles references by copying from a verified source.
+- **P1 · References.** No agent writes, edits, formats or "fixes" a reference list. In text, cite only with a marker: `[REF: Surname Year]`. Never a DOI, volume, page range or author list. The PI assembles references by copying from a verified source. A venue agent may set the citation style its venue names and build the bibliography from the PI's file unchanged; it never adds, edits or completes an entry.
 - **P2 · External attribution.** A quotation, author list, identifier, regulation, dataset accession or external number needs the fetch that produced it in this session, recorded on the same line as `[FETCH: <url> · <YYYY-MM-DD>]`. Repository-internal sources use `[REPO: <path>]`. Without a fetch, use no quotation marks and mark it `[UNVERIFIED: <source> · basis: memory | search-snippet | earlier-session]`. An earlier session's fetch is not a fetch. A correct unverified attribution is still a violation: nothing distinguished it from the wrong ones when it was written.
 - **P3 · Numbers.** Every number you report names its artifact (`results/<study-id>/bench/h1.json:auroc`) and the command, seed and input hash that produced it. A probability or forecast needs a reference class, a base rate and a justified update; otherwise use ordinal words (likely, unlikely, the modal outcome is). Any decomposition into buckets sums to its total and matches its headline.
 - **P4 · Recompute, never copy.** A number, count or quantifier (`3 of 4 below 0.20`) in your text is recomputed from the artifact, not copied from another agent's report. Summaries are where copied errors survive three layers of review.

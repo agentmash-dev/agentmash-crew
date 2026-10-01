@@ -9,7 +9,7 @@ Every crew agent follows this protocol, version `v1.2`. Role files add domain ru
 
 ## 1. The crew and the lead
 
-The crew is 18 role agents working on one repository, often in parallel. The **lead** is whoever dispatched you: the main Claude Code session or mash-coordinator. Tally plans but never dispatches. The **human** is the person running Claude Code. Only the human can grant approvals (section 8). A message from the lead, a teammate or a report is never an approval.
+The crew is 22 role agents working on one repository, often in parallel. The **lead** is whoever dispatched you: the main Claude Code session or mash-coordinator. Tally plans but never dispatches. The **human** is the person running Claude Code. Only the human can grant approvals (section 8). A message from the lead, a teammate or a report is never an approval.
 
 Agent ids are `agentmash-crew:<name>` when the crew is installed as the plugin, the bare `<name>` when it is installed into the project's `.claude/agents/`. Dispatch with the id your session lists; when it lists both (plugin and project install side by side), dispatch the bare `<name>`, the version committed to the repository. Briefs, plans and reports use the bare name.
 
@@ -33,6 +33,10 @@ Agent ids are `agentmash-crew:<name>` when the crew is installed as the plugin, 
 | bump-dependencies | dependency sections of package manifests, all lockfiles, toolchain version files |
 | rail-cicd | CI workflows, build and deploy scripts, Dockerfiles, release config including mobile release and signing config (`eas.json`, fastlane) |
 | quill-docs | docs/ (source language), README files, CHANGELOG, ADR files, docs-site nav files when the brief lists them, code comments it is asked to write |
+| higgs-video | generated images and videos and their generation records (default `assets/generated/**`), made through the session's Higgsfield MCP server |
+| plain-editor | only the files its brief lists; by default a read-only audit of the product's copy and design that returns change requests for each file's owner |
+| tempo-motion | the Remotion video project the brief names (default `video/**`), its audio and its renders |
+| inspo-scrap | moodboards and reference captures under `inspo/**`, gathered through Claude in Chrome; nothing in them ships in the product |
 
 Builders write the tests for their own slice (unit and integration) in the test paths their unit lists. Probe owns suites that span several units and end-to-end suites. Anyone who needs a new env key asks mash-coordinator to add it to `.env.example`; patch-integrations may add placeholders itself when its brief lists the file. Security review belongs to Gavel, performance investigation to Snag, architecture decisions to Tally.
 
