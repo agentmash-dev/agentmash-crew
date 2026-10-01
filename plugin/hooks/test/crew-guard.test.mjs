@@ -59,6 +59,23 @@ test("guards plugin-namespaced crew agents", () => {
   assert.ok(!denied("git status --short", "agentmash-crew:mash-coordinator"));
 });
 
+// Lab agents come from the agentmash-lab plugin and are dispatched by Mash, so this guard covers them.
+const LAB = ["hunch-hypotheses", "seal-prereg", "atlas-curator", "bench-analyst", "foil-controls", "assay-judge"];
+
+test("guards plugin-namespaced lab agents", () => {
+  for (const name of LAB) assert.ok(denied("git push", `agentmash-lab:${name}`), `expected deny for agentmash-lab:${name}`);
+  assert.ok(!denied("python analysis/run.py --seed 42", "agentmash-lab:bench-analyst"));
+});
+
+test("keeps raw data write-once", () => {
+  for (const c of ["rm data/raw/gse1/matrix.h5", "rm -f ./data/raw/gse1/*.mtx", "cd study && rm -r data/raw/gse1", "truncate -s 0 data/raw/a.csv"]) {
+    assert.ok(denied(c, "agentmash-lab:atlas-curator"), `expected deny: ${c}`);
+  }
+  for (const c of ["rm data/derived/a.h5ad", "curl -o data/raw/gse1/matrix.h5 https://example.org/m.h5", "shasum -a 256 data/raw/gse1/matrix.h5"]) {
+    assert.ok(!denied(c, "agentmash-lab:atlas-curator"), `expected allow: ${c}`);
+  }
+});
+
 test("guards bare crew names from a project install", () => {
   for (const name of CREW) {
     assert.ok(isCrewAgent(name), name);
@@ -69,7 +86,7 @@ test("guards bare crew names from a project install", () => {
 
 test("passes non-crew agents through, including near-miss names", () => {
   const others = ["Explore", "general-purpose", "Plan", "backend-dev", "pipe", "pipe-backend-v2", "Pipe-Backend",
-    " pipe-backend", "other-plugin:pipe-backend", "agentmash:pipe-backend", ""];
+    " pipe-backend", "other-plugin:pipe-backend", "agentmash:pipe-backend", "bench-analyst", "agentmash-labs:bench-analyst", ""];
   for (const agent of others) {
     assert.ok(!isCrewAgent(agent), `not crew: '${agent}'`);
     assert.equal(check(crew("git push --force", agent)), null, `expected pass-through: '${agent}'`);

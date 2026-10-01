@@ -73,7 +73,7 @@
       "effort": "high",
       "maxTurns": 120,
       "color": "orange",
-      "wordCount": 2220,
+      "wordCount": 2396,
       "sections": {
         "whenToUse": "Use when an approved tally-planner plan is ready to run, 'run the crew on this' with a plan in place, or parallel crew work needs integrating.",
         "returns": "Returns an integration report (verified units, full check, merge order, pending approvals) or, when the Agent tool is unavailable at the subagent nesting limit, the next wave's dispatch list.",
