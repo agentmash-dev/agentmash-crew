@@ -14,7 +14,7 @@ description: "Runs a task with the agentmash crew team Команда 123 (koman
 | Pipe | `pipe-backend` | Backend engineer |
 | Probe | `probe-qa` | QA engineer |
 
-Crew agents not in this team: tally-planner, scout-explorer, swipe-mobile, index-database, patch-integrations, batch-ml, spell-prompts, lingo-i18n, gavel-reviewer, snag-debugger, prune-refactor, bump-dependencies, rail-cicd, quill-docs. Never dispatch them; when the task needs one, follow "A role the team does not have" below.
+Crew agents not in this team: tally-planner, scout-explorer, swipe-mobile, index-database, patch-integrations, batch-ml, spell-prompts, lingo-i18n, gavel-reviewer, snag-debugger, prune-refactor, bump-dependencies, rail-cicd, quill-docs, higgs-video, plain-editor, tempo-motion, inspo-scrap. Never dispatch them; when the task needs one, follow "A role the team does not have" below.
 
 ## Run a task with this team
 

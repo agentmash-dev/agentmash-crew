@@ -13,14 +13,17 @@ const read = (rel) => fs.readFileSync(fileURLToPath(new URL(`../${rel}`, import.
 const readJson = (rel) => JSON.parse(read(rel));
 
 // Written out independently so a renamed or dropped agent fails here.
-const LAB = ['hunch-hypotheses', 'seal-prereg', 'atlas-curator', 'bench-analyst', 'foil-controls', 'assay-judge'];
+const LAB = [
+  'hunch-hypotheses', 'seal-prereg', 'atlas-curator', 'bench-analyst', 'foil-controls', 'assay-judge',
+  'volt-ieee', 'ribbon-isef', 'tensor-mlconf', 'proof-journal',
+];
 
-test('lab/agents holds exactly the six lab agents', () => {
+test('lab/agents holds exactly the ten lab agents', () => {
   const files = fs.readdirSync(fileURLToPath(new URL('../lab/agents', import.meta.url))).filter((f) => f.endsWith('.md'));
   assert.deepEqual(files.map((f) => f.replace(/\.md$/, '')).sort(), [...LAB].sort());
 });
 
-test('the protocol table and the run-lab cheat sheet list the six agents in roster order', () => {
+test('the protocol table and the run-lab cheat sheet list the ten agents in roster order', () => {
   const protocol = read('lab/skills/lab-protocol/SKILL.md');
   const section = protocol.slice(protocol.indexOf('## 1.'), protocol.indexOf('\n## 2.'));
   const rows = [...section.matchAll(/^\| ([a-z]+-[a-z]+) \|/gm)].map(([, name]) => name);

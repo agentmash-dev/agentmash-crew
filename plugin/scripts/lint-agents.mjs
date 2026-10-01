@@ -11,7 +11,10 @@ const COLORS = new Set(["red", "blue", "green", "yellow", "purple", "orange", "p
 const MODELS = new Set(["inherit", "sonnet", "opus", "haiku", "fable"]);
 const EFFORTS = new Set(["low", "medium", "high", "xhigh", "max"]);
 const TOOLS = new Set(["Read", "Write", "Edit", "Bash", "Grep", "Glob", "WebFetch", "WebSearch", "Agent", "NotebookEdit", "TodoWrite"]);
-const CREW = new Set(["mash-coordinator", "tally-planner", "scout-explorer", "flex-frontend", "pipe-backend", "swipe-mobile", "index-database", "patch-integrations", "batch-ml", "spell-prompts", "lingo-i18n", "probe-qa", "gavel-reviewer", "snag-debugger", "prune-refactor", "bump-dependencies", "rail-cicd", "quill-docs"]);
+const CREW = new Set(["mash-coordinator", "tally-planner", "scout-explorer", "flex-frontend", "pipe-backend", "swipe-mobile", "index-database", "patch-integrations", "batch-ml", "spell-prompts", "lingo-i18n", "probe-qa", "gavel-reviewer", "snag-debugger", "prune-refactor", "bump-dependencies", "rail-cicd", "quill-docs", "higgs-video", "plain-editor", "tempo-motion", "inspo-scrap"]);
+// Agents that drive an MCP server of the user's session (Higgsfield, Claude in Chrome) leave `tools` out and
+// inherit every tool: a plugin agent cannot declare mcpServers, and the server's tool prefix differs per install.
+const INHERITS_TOOLS = new Set(["higgs-video", "inspo-scrap"]);
 const HEADINGS = ["## Crew protocol", "## Scope", "## Inputs", "## Process", "## Domain pitfalls", "## Rationalizations to reject", "## Definition of done", "## Stop and escalate", "## Report"];
 const TOKENS = ["STATUS:", ".agentmash-crew/reports/"];
 let errors = 0, warnings = 0;
@@ -39,17 +42,18 @@ for (const f of files) {
   if (!fm) { err(f, "missing frontmatter"); continue; }
   const d = fm.data;
   const keys = Object.keys(d);
-  if (keys.join(",") !== FIELDS.join(",")) err(f, `frontmatter fields/order ${keys.join(",")} != ${FIELDS.join(",")}`);
+  const fields = INHERITS_TOOLS.has(basename(f, ".md")) ? FIELDS.filter((k) => k !== "tools") : FIELDS;
+  if (keys.join(",") !== fields.join(",")) err(f, `frontmatter fields/order ${keys.join(",")} != ${fields.join(",")}`);
   if (d.name !== basename(f, ".md")) err(f, `name ${d.name} does not match file name`);
   if (!/^[a-z][a-z0-9-]+$/.test(d.name || "")) err(f, "name is not kebab-case");
   const desc = d.description || "";
   if (desc.length < 250 || desc.length > 480) err(f, `description length ${desc.length} not in 250-480`);
   if (!/^Use (when|after)/.test(desc)) err(f, "description must start with 'Use when' or 'Use after'");
   if (!/Not for/.test(desc)) err(f, "description has no 'Not for' clause");
-  const mentioned = [...desc.matchAll(/\b((?:mash|tally|scout|flex|pipe|swipe|index|patch|batch|spell|lingo|probe|gavel|snag|prune|bump|rail|quill)-[a-z0-9-]+)\b/g)].map((m) => m[1]);
+  const mentioned = [...desc.matchAll(/\b((?:mash|tally|scout|flex|pipe|swipe|index|patch|batch|spell|lingo|probe|gavel|snag|prune|bump|rail|quill|higgs|plain|tempo|inspo)-[a-z0-9-]+)\b/g)].map((m) => m[1]);
   for (const s of mentioned) if (!CREW.has(s)) err(f, `description names unknown crew agent '${s}'`);
   const notFor = desc.split(/Not for/)[1] || "";
-  if (!/(mash|tally|scout|flex|pipe|swipe|index|patch|batch|spell|lingo|probe|gavel|snag|prune|bump|rail|quill)-/.test(notFor)) err(f, "'Not for' clause names no sibling agent");
+  if (!/(mash|tally|scout|flex|pipe|swipe|index|patch|batch|spell|lingo|probe|gavel|snag|prune|bump|rail|quill|higgs|plain|tempo|inspo)-/.test(notFor)) err(f, "'Not for' clause names no sibling agent");
   for (const t of (d.tools || "").split(",").map((s) => s.trim()).filter(Boolean)) if (!TOOLS.has(t)) err(f, `unknown tool ${t}`);
   if (!MODELS.has(d.model)) err(f, `model ${d.model}`);
   if (!EFFORTS.has(d.effort)) err(f, `effort ${d.effort}`);

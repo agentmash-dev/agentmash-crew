@@ -26,8 +26,16 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const AGENT_ORDER = [
   "mash-coordinator", "tally-planner", "scout-explorer", "flex-frontend", "pipe-backend", "swipe-mobile",
   "index-database", "patch-integrations", "batch-ml", "spell-prompts", "lingo-i18n", "probe-qa", "gavel-reviewer",
-  "snag-debugger", "prune-refactor", "bump-dependencies", "rail-cicd", "quill-docs",
+  "snag-debugger", "prune-refactor", "bump-dependencies", "rail-cicd", "quill-docs", "higgs-video", "plain-editor",
+  "tempo-motion", "inspo-scrap",
 ];
+
+/**
+ * Agents that drive an MCP server of the user's session (Higgsfield, Claude in Chrome) leave `tools` out and inherit
+ * every tool: a plugin agent cannot declare mcpServers, and a server's tool prefix differs from one install to the next.
+ * The catalog marks them `inheritsTools`, so a page can say so instead of listing tools.
+ */
+export const INHERITS_TOOLS = ["higgs-video", "inspo-scrap"];
 
 export const GROUPS = [
   { id: "lead", title: "Lead", members: ["mash-coordinator", "tally-planner", "scout-explorer"] },
@@ -40,6 +48,7 @@ export const GROUPS = [
   { id: "quality", title: "Quality", members: ["probe-qa", "gavel-reviewer", "snag-debugger", "prune-refactor"] },
   { id: "ops", title: "Ops", members: ["bump-dependencies", "rail-cicd"] },
   { id: "docs", title: "Docs", members: ["quill-docs"] },
+  { id: "design", title: "Design", members: ["higgs-video", "plain-editor", "tempo-motion", "inspo-scrap"] },
 ];
 
 const CONDUCTOR = "mash-coordinator";
@@ -330,7 +339,7 @@ export function readSources(root, { allowMissingTemplate = false } = {}) {
   const missing = AGENT_ORDER.filter((name) => !present.includes(name));
   const extra = present.filter((name) => !AGENT_ORDER.includes(name));
   if (missing.length || extra.length) {
-    throw new Error(`plugin/agents must hold exactly the 18 crew agents (missing: ${missing.join(", ") || "none"}; ` +
+    throw new Error(`plugin/agents must hold exactly the ${AGENT_ORDER.length} crew agents (missing: ${missing.join(", ") || "none"}; ` +
       `unexpected: ${extra.join(", ") || "none"})`);
   }
 
@@ -367,7 +376,9 @@ export function buildBundle({ version, agents, shared, template }) {
     const source = agents[name];
     if (source === undefined) throw new Error(`missing ${label}`);
     const { data, body } = parseFrontmatter(source, label);
-    const absent = Object.keys(FIELD_TYPES).filter((key) => !Object.hasOwn(data, key));
+    const optional = INHERITS_TOOLS.includes(name) ? ["tools"] : [];
+    const absent = Object.keys(FIELD_TYPES).filter((key) => !Object.hasOwn(data, key) && !optional.includes(key));
+    if (INHERITS_TOOLS.includes(name) && Object.hasOwn(data, "tools")) throw new Error(`${label}: leaves tools out (it inherits the session's MCP tools)`);
     if (absent.length) throw new Error(`${label}: missing field(s) ${absent.join(", ")}`);
     if (data.name !== name) throw new Error(`${label}: name '${data.name}' does not match the file name`);
     const content = toProjectFlavor(source, label);
@@ -444,7 +455,8 @@ export function buildCatalog(bundle, ru) {
       role: agent.role,
       group: agent.group,
       description: data.description,
-      tools: data.tools,
+      tools: data.tools ?? [],
+      inheritsTools: INHERITS_TOOLS.includes(agent.name),
       model: data.model,
       effort: data.effort,
       maxTurns: data.maxTurns,
