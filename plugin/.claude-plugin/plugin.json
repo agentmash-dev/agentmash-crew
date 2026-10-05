@@ -1,14 +1,14 @@
 {
   "name": "agentmash-crew",
   "displayName": "agentmash crew",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "22 role agents for teams that run many Claude Code agents on one repository: a coordinator, a planner, builders, reviewers, a debugger, design and video makers and more, sharing one protocol for ownership, agentmash heads-ups, git hygiene, approval gates and reports.",
   "author": {
     "name": "Damir Iskakov",
     "url": "https://agentmash.dev"
   },
-  "homepage": "https://github.com/IskakovDamir/agentmash-crew",
-  "repository": "https://github.com/IskakovDamir/agentmash-crew",
+  "homepage": "https://github.com/agentmash-dev/agentmash-crew",
+  "repository": "https://github.com/agentmash-dev/agentmash-crew",
   "license": "MIT",
   "keywords": [
     "agentmash",

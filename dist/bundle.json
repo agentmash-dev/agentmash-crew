@@ -2,8 +2,8 @@
   "schema": 1,
   "meta": {
     "name": "agentmash-crew",
-    "version": "1.3.0",
-    "url": "https://github.com/IskakovDamir/agentmash-crew",
+    "version": "1.3.1",
+    "url": "https://github.com/agentmash-dev/agentmash-crew",
     "conductor": "mash-coordinator",
     "addCommand": "npx agentmash team add <team> --agents <agent>",
     "hook": {

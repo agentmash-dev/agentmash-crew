@@ -1,6 +1,6 @@
 # agentmash crew
 
-[![CI](https://github.com/IskakovDamir/agentmash-crew/actions/workflows/ci.yml/badge.svg)](https://github.com/IskakovDamir/agentmash-crew/actions/workflows/ci.yml)
+[![CI](https://github.com/agentmash-dev/agentmash-crew/actions/workflows/ci.yml/badge.svg)](https://github.com/agentmash-dev/agentmash-crew/actions/workflows/ci.yml)
 
 Twenty-two Claude Code subagents that work as one crew on one repository. Each has a role (planner, frontend, backend, reviewer, debugger, video and motion makers and so on) and a mascot from [agentmash](https://agentmash.dev). They follow one shared protocol for file ownership, git hygiene in a shared working tree, human approval gates and reports. A conductor called Mash takes an approved plan, dispatches builders in parallel, checks their claims against the diff and integrates the result.
 
@@ -32,7 +32,7 @@ You can install the crew two ways:
 ## Install as a plugin
 
 ```bash
-claude plugin marketplace add IskakovDamir/agentmash-crew
+claude plugin marketplace add agentmash-dev/agentmash-crew
 claude plugin install agentmash-crew@agentmash
 ```
 
@@ -59,7 +59,7 @@ npx agentmash team add "agentmash crew" --agents pipe,flex,probe
 Without the agentmash package, the same installer runs from this repository, pinned to a release:
 
 ```bash
-npx github:IskakovDamir/agentmash-crew#v1.3.0 team add "agentmash crew" --agents pipe,flex,probe
+npx github:agentmash-dev/agentmash-crew#v1.3.1 team add "agentmash crew" --agents pipe,flex,probe
 ```
 
 Mash is added automatically, so this team is Mash, Flex, Pipe and Probe. Add `--dry-run` to see the file list first. The installer writes the team into the project's `.claude/` directory and prints a commit command that stages exactly the files it manages and the ones it deleted, and nothing else under `.claude/` (not your other skills, and not installed files you edited):
@@ -128,7 +128,7 @@ npx agentmash team add "agentmash crew" --agents index
 
 ```
 npx agentmash team <command> [options]                                # the agentmash CLI, 0.4.0 or later
-npx github:IskakovDamir/agentmash-crew#v1.3.0 <command> [options]     # this repository's installer, no agentmash package
+npx github:agentmash-dev/agentmash-crew#v1.3.1 <command> [options]     # this repository's installer, no agentmash package
 ```
 
 Both run the same installer. `agents`, `help` and `--version` are the installer's own commands; the agentmash CLI has `team add`, `team remove`, `team list` and `team update`.
@@ -247,7 +247,7 @@ claude plugin uninstall agentmash-crew@agentmash
 claude plugin marketplace remove agentmash
 ```
 
-**Team.** `npx agentmash team update` rewrites the installed files to the crew version the agentmash CLI carries. From this repository, pin a release with `#<tag>` so everyone on the team writes the same files: `npx github:IskakovDamir/agentmash-crew#v1.3.0 team update`.
+**Team.** `npx agentmash team update` rewrites the installed files to the crew version the agentmash CLI carries. From this repository, pin a release with `#<tag>` so everyone on the team writes the same files: `npx github:agentmash-dev/agentmash-crew#v1.3.1 team update`.
 
 ```bash
 npx agentmash team update --dry-run                          # preview

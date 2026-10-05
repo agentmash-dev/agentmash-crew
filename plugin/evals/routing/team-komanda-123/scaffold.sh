@@ -174,7 +174,7 @@ cat > .claude/agentmash-crew/teams.json <<'TEAMS_JSON'
   "source": {
     "name": "agentmash-crew",
     "version": "1.1.0",
-    "url": "https://github.com/IskakovDamir/agentmash-crew"
+    "url": "https://github.com/agentmash-dev/agentmash-crew"
   },
   "createdSettings": false,
   "teams": [
