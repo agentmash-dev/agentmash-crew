@@ -29,7 +29,7 @@ The words MUST, MUST NOT and SHOULD are used as in RFC 2119. "Implementation-def
 Fetch a released bundle by tag from jsDelivr:
 
 ```
-https://cdn.jsdelivr.net/gh/IskakovDamir/agentmash-crew@v<version>/dist/bundle.json
+https://cdn.jsdelivr.net/gh/agentmash-dev/agentmash-crew@v<version>/dist/bundle.json
 ```
 
 The tag is `v` followed by `meta.version`, for example `v1.3.0`. Pin a tag: a branch URL can change under a cached installer.
@@ -53,7 +53,7 @@ The bundle is one UTF-8 JSON document, serialized as `JSON.stringify(bundle, nul
   "meta": {
     "name": "agentmash-crew",
     "version": "1.2.0",
-    "url": "https://github.com/IskakovDamir/agentmash-crew",
+    "url": "https://github.com/agentmash-dev/agentmash-crew",
     "conductor": "mash-coordinator",
     "addCommand": "npx agentmash team add <team> --agents <agent>",
     "hook": {
@@ -285,7 +285,7 @@ The exact header of `{{roster_table}}`, and whether substituted values are scann
 ```json
 {
   "schema": 1,
-  "source": { "name": "agentmash-crew", "version": "1.2.0", "url": "https://github.com/IskakovDamir/agentmash-crew" },
+  "source": { "name": "agentmash-crew", "version": "1.2.0", "url": "https://github.com/agentmash-dev/agentmash-crew" },
   "createdSettings": false,
   "teams": [
     { "slug": "agentmash-crew", "name": "agentmash crew", "members": ["mash-coordinator", "pipe-backend"] }
@@ -505,7 +505,7 @@ npx agentmash team add "agentmash crew" --agents pipe,flex,probe
   "source": {
     "name": "agentmash-crew",
     "version": "1.2.0",
-    "url": "https://github.com/IskakovDamir/agentmash-crew"
+    "url": "https://github.com/agentmash-dev/agentmash-crew"
   },
   "createdSettings": true,
   "teams": [

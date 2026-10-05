@@ -50,7 +50,7 @@ test('every hand-written "team add" command is the bundle add command', () => {
   const prefix = bundle.meta.addCommand.split('<team>')[0];
   assert.equal(prefix, 'npx agentmash team add ');
   const { version } = readJson('package.json');
-  const pinned = `npx github:IskakovDamir/agentmash-crew#v${version} team add `;
+  const pinned = `npx github:agentmash-dev/agentmash-crew#v${version} team add `;
   let seen = 0;
   for (const file of HAND_WRITTEN) {
     for (const [command] of read(file).matchAll(/npx [^\s`]+ team add /g)) {
@@ -65,7 +65,7 @@ test('every "npx github:" spec in the docs pins this release', () => {
   const { version } = readJson('package.json');
   for (const file of HAND_WRITTEN) {
     for (const [spec] of read(file).matchAll(/npx github:[^\s`]+/g)) {
-      assert.equal(spec, `npx github:IskakovDamir/agentmash-crew#v${version}`, `${file}: ${spec}`);
+      assert.equal(spec, `npx github:agentmash-dev/agentmash-crew#v${version}`, `${file}: ${spec}`);
     }
   }
 });

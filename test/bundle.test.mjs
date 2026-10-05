@@ -222,7 +222,7 @@ describe("bundle", () => {
     assert.deepEqual(bundle.meta, {
       name: "agentmash-crew",
       version: FIXTURE_VERSION,
-      url: "https://github.com/IskakovDamir/agentmash-crew",
+      url: "https://github.com/agentmash-dev/agentmash-crew",
       conductor: "mash-coordinator",
       addCommand: "npx agentmash team add <team> --agents <agent>",
       hook: {

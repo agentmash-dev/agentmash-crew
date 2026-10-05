@@ -13,7 +13,7 @@ The lab is the general form of a multi-agent research system run on a computatio
 The lab needs the crew plugin for its conductor:
 
 ```bash
-claude plugin marketplace add IskakovDamir/agentmash-crew
+claude plugin marketplace add agentmash-dev/agentmash-crew
 claude plugin install agentmash-crew@agentmash
 claude plugin install agentmash-lab@agentmash
 ```

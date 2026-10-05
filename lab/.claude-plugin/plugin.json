@@ -1,14 +1,14 @@
 {
   "name": "agentmash-lab",
   "displayName": "agentmash lab",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Ten science agents run by the agentmash crew's coordinator: a hypothesis scout with cross-field prior-art checks, a pre-registration registrar, a dataset curator, an analyst, a controls builder, an evidence judge, and four venue agents that take a judged paper to IEEE, Regeneron ISEF, an ML conference or a journal, sharing one protocol for pre-registration locks, provenance and PI approval gates.",
   "author": {
     "name": "Damir Iskakov",
     "url": "https://agentmash.dev"
   },
-  "homepage": "https://github.com/IskakovDamir/agentmash-crew",
-  "repository": "https://github.com/IskakovDamir/agentmash-crew",
+  "homepage": "https://github.com/agentmash-dev/agentmash-crew",
+  "repository": "https://github.com/agentmash-dev/agentmash-crew",
   "license": "MIT",
   "keywords": [
     "agentmash",

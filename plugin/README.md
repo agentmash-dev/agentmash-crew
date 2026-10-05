@@ -22,14 +22,14 @@ This file covers the plugin in depth. For installing a named team into a reposit
 The repository root is a plugin marketplace named `agentmash` (see `.claude-plugin/marketplace.json`):
 
 ```bash
-claude plugin marketplace add IskakovDamir/agentmash-crew
+claude plugin marketplace add agentmash-dev/agentmash-crew
 claude plugin install agentmash-crew@agentmash
 ```
 
 Or try it for one session without installing, from a clone:
 
 ```bash
-git clone https://github.com/IskakovDamir/agentmash-crew
+git clone https://github.com/agentmash-dev/agentmash-crew
 claude --plugin-dir agentmash-crew/plugin
 ```
 
