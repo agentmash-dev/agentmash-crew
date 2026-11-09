@@ -17,6 +17,7 @@ You can install the crew two ways:
 
 ## Contents
 
+- [agentmash for Claude Code](#agentmash-for-claude-code)
 - [Install as a plugin](#install-as-a-plugin)
 - [Install a team into a repository](#install-a-team-into-a-repository)
 - [Teams](#teams)
@@ -28,6 +29,18 @@ You can install the crew two ways:
 - [Updating and removing](#updating-and-removing)
 - [Development](#development)
 - [License](#license)
+
+## agentmash for Claude Code
+
+The `agentmash` plugin is [agentmash](https://agentmash.dev) itself: before your agent edits a file, it is told which teammate's agent is in it, on what branch and what they are doing. It carries the hooks `npx agentmash login` installs, so they update with the plugin and nothing goes into your repositories.
+
+```bash
+claude plugin marketplace add agentmash-dev/agentmash-crew
+claude plugin install agentmash@agentmash
+npx agentmash login --skip claude
+```
+
+The last line signs the machine in with GitHub, once, in a terminal; `--skip claude` leaves Claude Code to the plugin. Its README, with what leaves your machine, is [agentmash/README.md](agentmash/README.md). It is built from the agentmash client ([agentmash-dev/agentmash-cli](https://github.com/agentmash-dev/agentmash-cli)): change it there, not here.
 
 ## Install as a plugin
 

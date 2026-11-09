@@ -4,8 +4,29 @@
     "name": "Damir Iskakov",
     "url": "https://agentmash.dev"
   },
-  "description": "Plugins for teams running many Claude Code agents on one repository, and for running science with them.",
+  "description": "agentmash for Claude Code, and plugins for teams running many Claude Code agents on one repository, and for running science with them.",
   "plugins": [
+    {
+      "name": "agentmash",
+      "displayName": "agentmash",
+      "description": "Your team's coding agents see each other: before your agent edits a file, it is told which teammate's agent is in it, on what branch and what they are doing. The hooks of npx agentmash login, as a plugin.",
+      "version": "0.1.0",
+      "author": {
+        "name": "agentmash",
+        "url": "https://agentmash.dev"
+      },
+      "homepage": "https://agentmash.dev",
+      "repository": "https://github.com/agentmash-dev/agentmash-cli",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": [
+        "multi-agent",
+        "team",
+        "coordination",
+        "hooks"
+      ],
+      "source": "./agentmash"
+    },
     {
       "name": "agentmash-crew",
       "displayName": "agentmash crew",
