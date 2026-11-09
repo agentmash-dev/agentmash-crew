@@ -39,5 +39,8 @@ jobs:
       - name: Validate lab plugin
         run: npx -y @anthropic-ai/claude-code@2.1.283 plugin validate --strict lab
 
+      - name: Validate agentmash plugin
+        run: npx -y @anthropic-ai/claude-code@2.1.283 plugin validate --strict agentmash
+
       - name: Validate marketplace
         run: npx -y @anthropic-ai/claude-code@2.1.283 plugin validate --strict .

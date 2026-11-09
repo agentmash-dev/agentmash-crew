@@ -1,0 +1,19 @@
+{
+  "name": "agentmash",
+  "version": "0.1.0",
+  "description": "Your team's coding agents see each other: before your agent edits a file, it is told which teammate's agent is in it, on what branch and what they are doing. The hooks of npx agentmash login, as a plugin.",
+  "author": {
+    "name": "agentmash",
+    "url": "https://agentmash.dev"
+  },
+  "homepage": "https://agentmash.dev",
+  "repository": "https://github.com/agentmash-dev/agentmash-cli",
+  "license": "MIT",
+  "keywords": [
+    "agentmash",
+    "multi-agent",
+    "team",
+    "coordination",
+    "hooks"
+  ]
+}
